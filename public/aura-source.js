@@ -1,4 +1,4 @@
-﻿/* eslint-disable @typescript-eslint/no-unused-vars */
+/* eslint-disable @typescript-eslint/no-unused-vars */
 // ── DATA ──
 const properties = [];
 
@@ -42,11 +42,13 @@ function mapPropertyType(value) {
 }
 
 function formatAdminPrice(item) {
-  const currency = item.currency || 'USD';
-  const amount = Number(item.price || 0).toLocaleString('ru-RU').replace(/\u00a0/g, ' ');
-  const symbol = currency === 'USD' ? '$' : 'TJS';
+  let rawPrice = Number(item.price || 0);
+  if ((item.currency || 'USD') === 'USD') {
+    rawPrice = Math.round(rawPrice * 10.6);
+  }
+  const amount = rawPrice.toLocaleString('ru-RU').replace(/\u00a0/g, ' ');
   const suffix = item.monthlyPrice ? ' /мес' : '';
-  return currency === 'USD' ? `${symbol}${amount}${suffix}` : `${amount} ${symbol}${suffix}`;
+  return `${amount} смн${suffix}`;
 }
 
 function mapAdminListing(entry) {
@@ -208,23 +210,110 @@ function lucideIcon(name, className = 'lucide-inline') {
   return `<svg class="${className}" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${lucideIcons[name] || ''}</svg>`;
 }
 
+// ── FAVORITES (localStorage) ──
+const FAV_KEY = 'barakat_favorites';
+
+function getFavorites() {
+  try {
+    return JSON.parse(localStorage.getItem(FAV_KEY) || '[]');
+  } catch { return []; }
+}
+
+function saveFavorites(ids) {
+  localStorage.setItem(FAV_KEY, JSON.stringify(ids));
+  updateNavFavBadge();
+}
+
+function isFavoriteProperty(id) {
+  return getFavorites().includes(String(id));
+}
+
+function toggleFav(button) {
+  const id = button.dataset.propId;
+  if (!id) return;
+  const favs = getFavorites();
+  const index = favs.indexOf(String(id));
+  if (index === -1) {
+    favs.push(String(id));
+    button.classList.add('active');
+    button.dataset.fav = 'true';
+  } else {
+    favs.splice(index, 1);
+    button.classList.remove('active');
+    button.dataset.fav = 'false';
+  }
+  saveFavorites(favs);
+}
+
+function updateNavFavBadge() {
+  const badge = document.getElementById('nav-fav-count');
+  const count = getFavorites().length;
+  if (badge) {
+    badge.textContent = count;
+    badge.style.display = count > 0 ? 'flex' : 'none';
+  }
+}
+
+function renderFavoritesPage() {
+  const grid = document.getElementById('favorites-grid');
+  const countEl = document.getElementById('favorites-count');
+  if (!grid) return;
+
+  const favIds = getFavorites();
+  const items = getAllProperties().filter((p) => favIds.includes(String(p.id)));
+
+  if (countEl) {
+    countEl.textContent = items.length
+      ? `Сохранено объектов: ${items.length}`
+      : 'У вас пока нет избранных объектов';
+  }
+
+  grid.innerHTML = items.length
+    ? items.map((p) => propCard(p)).join('')
+    : '<div class="seller-empty" style="grid-column:1/-1;text-align:center;padding:60px 20px"><p style="font-size:17px;color:var(--muted)">Нажмите ♡ на карточке объявления,<br>чтобы добавить его в избранное</p></div>';
+}
+
 // ── RENDER CARDS ──
 function propCard(p, onclick) {
   const isFav = isFavoriteProperty(p.id);
+  const imgs = (p.images && p.images.length > 0) ? p.images : [p.image];
+  const uniqueImgs = [...new Set(imgs.filter(Boolean))];
+  const slideId = `slider-${p.id}-${Math.random().toString(36).slice(2,7)}`;
+
+  const slides = uniqueImgs.map((src, i) =>
+    `<img src="${src}" alt="${p.addr}" loading="lazy" class="prop-slide${i === 0 ? ' active' : ''}" />`
+  ).join('');
+
+  const dots = uniqueImgs.length > 1
+    ? `<div class="prop-dots">${uniqueImgs.map((_, i) => `<span class="prop-dot${i === 0 ? ' active' : ''}" data-i="${i}"></span>`).join('')}</div>`
+    : '';
+
+  const counter = uniqueImgs.length > 1
+    ? `<div class="prop-img-counter"><span>1</span>/${uniqueImgs.length}</div>`
+    : '';
+
   return `<div class="prop-card" onclick="${onclick||`navigate('property','${p.id}')`}" style="animation-delay:${Math.random()*.3}s">
-    <div class="prop-img">
-      <img src="${p.image}" alt="${p.addr}" loading="lazy" />
+    <div class="prop-img" id="${slideId}" data-slide="0" data-total="${uniqueImgs.length}">
+      ${slides}
+      <div class="prop-img-gradient"></div>
       <div class="prop-tags">
         <span class="tag tag-${p.tag}">${p.tagLabel}</span>
         ${p.new?'<span class="tag tag-new">Новое</span>':''}
       </div>
       <button class="prop-fav${isFav ? ' active' : ''}" onclick="event.stopPropagation();toggleFav(this)" aria-label="Добавить в избранное" data-prop-id="${p.id}" data-fav="${isFav ? 'true' : 'false'}">${lucideIcon('heart', 'lucide-fav')}</button>
+      ${counter}
+      ${dots}
+      ${uniqueImgs.length > 1 ? `
+        <button class="prop-slider-btn prev" onclick="event.stopPropagation();slideCard('${slideId}',-1)" aria-label="Назад">‹</button>
+        <button class="prop-slider-btn next" onclick="event.stopPropagation();slideCard('${slideId}',1)" aria-label="Вперед">›</button>
+      ` : ''}
     </div>
     <div class="prop-body">
-      <div class="prop-price">${p.price} <small>${p.priceNote}</small></div>
-      <div class="prop-addr">${lucideIcon('mapPin')} ${p.addr}
-        <button class="prop-addr-favorites" type="button" onclick="event.stopPropagation();navigate('favorites')" aria-label="Перейти в избранное">${lucideIcon('heart','lucide-inline')}</button>
+      <div class="prop-price-row">
+        <div class="prop-price">${p.price}</div>
+        <div class="prop-price-note">${p.priceNote}</div>
       </div>
+      <div class="prop-addr">${lucideIcon('mapPin')} ${p.addr}</div>
       <div class="prop-meta">
         <span>${lucideIcon('bed')} <strong>${p.rooms}</strong> комн</span>
         <span>${lucideIcon('ruler')} <strong>${p.area}</strong> м²</span>
@@ -239,6 +328,49 @@ function propCard(p, onclick) {
       </div>
     </div>
   </div>`;
+}
+
+function slideCard(sliderId, dir) {
+  const container = document.getElementById(sliderId);
+  if (!container) return;
+  const slides = container.querySelectorAll('.prop-slide');
+  const dots = container.querySelectorAll('.prop-dot');
+  const counter = container.querySelector('.prop-img-counter span');
+  const total = slides.length;
+  if (total <= 1) return;
+
+  let current = Number(container.dataset.slide || 0);
+  current = (current + dir + total) % total;
+  container.dataset.slide = current;
+
+  slides.forEach((s, i) => s.classList.toggle('active', i === current));
+  dots.forEach((d, i) => d.classList.toggle('active', i === current));
+  if (counter) counter.textContent = current + 1;
+}
+
+function initCardSliders() {
+  document.querySelectorAll('.prop-img[data-total]').forEach((container) => {
+    const total = Number(container.dataset.total);
+    if (total <= 1 || container.dataset.autoSlide) return;
+    container.dataset.autoSlide = 'true';
+
+    const id = container.id;
+    const interval = 3000 + Math.random() * 2000;
+    setInterval(() => {
+      if (!document.getElementById(id)) return;
+      slideCard(id, 1);
+    }, interval);
+
+    // Dot click
+    container.querySelectorAll('.prop-dot').forEach((dot) => {
+      dot.addEventListener('click', (e) => {
+        e.stopPropagation();
+        const target = Number(dot.dataset.i);
+        const current = Number(container.dataset.slide || 0);
+        slideCard(id, target - current);
+      });
+    });
+  });
 }
 
 function renderCards(containerId, count) {
@@ -454,38 +586,11 @@ async function hydrateAuraPage(page) {
   if (page === 'agent') renderCards('agent-grid', 6);
   if (page === 'services') setupServiceRequestForm();
   await initLeafletMaps();
+  initCardSliders();
 }
 
 function renderCatalogState() {
   const total = getAllProperties().length;
-  document.querySelectorAll('.hero-card').forEach((card) => {
-    card.style.display = total ? '' : 'none';
-  });
-  document.querySelectorAll('.floating-badge').forEach((badge) => {
-    badge.style.display = total ? '' : 'none';
-  });
-
-  const heroCards = document.querySelector('.hero-cards');
-  if (heroCards && !total && !heroCards.querySelector('.hero-design-preview')) {
-    heroCards.insertAdjacentHTML(
-      'afterbegin',
-      `<div class="hero-design-preview" aria-hidden="true">
-        <div class="design-map-card">
-          <div class="design-map-grid"></div>
-          <span class="design-pin pin-a"></span>
-          <span class="design-pin pin-b"></span>
-          <span class="design-pin pin-c"></span>
-          <div class="design-district">Dushanbe</div>
-        </div>
-        <div class="design-info-card">
-          <span></span><span></span><span></span>
-        </div>
-        <div class="design-tower tower-a"></div>
-        <div class="design-tower tower-b"></div>
-        <div class="design-tower tower-c"></div>
-      </div>`,
-    );
-  }
 
   document.querySelectorAll('.stat-num').forEach((el, index) => {
     if (index === 0) el.innerHTML = `${total}<span>+</span>`;
@@ -493,23 +598,26 @@ function renderCatalogState() {
   document.querySelectorAll('.listings-count').forEach((el) => {
     el.innerHTML = `Найдено: <strong>${total} объектов</strong>`;
   });
+  document.querySelectorAll('.total-num').forEach((el) => {
+    el.textContent = total;
+  });
   document.querySelectorAll('#map-results-count').forEach((el) => {
     el.textContent = `Показано: ${total} объектов`;
   });
-  document.querySelectorAll('.map-overlay-ui p').forEach((el) => {
+  document.querySelectorAll('.map-home-results-count').forEach((el) => {
     el.textContent = `${total} объектов на карте`;
   });
 }
 
 function setupHomeCarousel() {
   const track = document.querySelector('.hero-cards-track');
-  if (!track) return;
+  const container = document.querySelector('.hero-cards');
+  if (!track || !container) return;
 
-  // Remove old clones before rebuilding the infinite loop.
   track.querySelectorAll('.carousel-clone').forEach((clone) => clone.remove());
 
   const originalCards = Array.from(track.children).filter((card) => !card.classList.contains('carousel-clone'));
-  const cloneCount = Math.min(2, originalCards.length);
+  const cloneCount = Math.max(2, originalCards.length);
 
   const prependClones = originalCards.slice(-cloneCount).map((card) => {
     const clone = card.cloneNode(true);
@@ -564,11 +672,13 @@ function setupHomeCarousel() {
     const cards = Array.from(track.children);
     if (!cards.length) return;
 
-    track.style.transition = skipTransition ? 'none' : 'transform .45s ease';
-    const cardWidth = cards[0].getBoundingClientRect().width;
-    const gap = 20;
+    track.style.transition = skipTransition ? 'none' : 'transform .6s cubic-bezier(0.25, 1, 0.5, 1)';
+    // overlap logic: gap is 0, margin is -40px both sides, so effective width is cardWidth - 80px
+    const cardWidth = 280; 
+    const effectiveWidth = cardWidth - 80;
     const containerWidth = container.getBoundingClientRect().width;
-    const centeredOffset = window.heroCarouselIndex * (cardWidth + gap) - (containerWidth - cardWidth) / 2;
+    const centeredOffset = window.heroCarouselIndex * effectiveWidth - (containerWidth - cardWidth) / 2 - 40; 
+    
     track.style.transform = `translateX(${-centeredOffset}px)`;
 
     cards.forEach((card, index) => {
@@ -578,14 +688,11 @@ function setupHomeCarousel() {
       card.classList.toggle('active', isActive);
       card.classList.toggle('prev', isPrev);
       card.classList.toggle('next', isNext);
-      if (!isPrev && !isNext && !isActive) {
-        card.classList.remove('prev', 'next');
-      }
     });
   };
 
   window.updateHeroCarousel(true);
-  window.heroCarouselTimer = window.setInterval(() => window.slideHeroCards(1), 4500);
+  window.heroCarouselTimer = window.setInterval(() => window.slideHeroCards(1), 3500);
 }
 
 function navigate(page, id) {
@@ -658,7 +765,7 @@ function getListingsFilters() {
   const roomsSelect = document.querySelectorAll('.listings-page .s-select')[1];
   const sortSelect = document.querySelector('.sort-select');
   const priceRange = Array.from(document.querySelectorAll('.filter-group')).find(
-    (item) => item.querySelector('h4')?.textContent?.trim() === 'Цена (USD)',
+    (item) => item.querySelector('h4')?.textContent?.trim() === 'Цена (TJS)',
   )?.querySelector('.range-input');
   const areaRange = Array.from(document.querySelectorAll('.filter-group')).find(
     (item) => item.querySelector('h4')?.textContent?.trim() === 'Площадь (м²)',
@@ -826,7 +933,7 @@ function renderPropertyDetail() {
 
   if (detailPrice) detailPrice.textContent = property.price;
   if (detailPricePer) {
-    detailPricePer.textContent = property.area ? `≈ ${Math.round(normalizeNumber(property.price) / Number(property.area)) || '-'} $/м²` : '';
+    detailPricePer.textContent = property.area ? `≈ ${Math.round(normalizeNumber(property.price) / Number(property.area)) || '-'} смн/м²` : '';
   }
   if (detailTitle) detailTitle.textContent = property.title || property.addr;
   if (detailAddr) detailAddr.innerHTML = `${lucideIcon('mapPin')} ${property.addr}`;
@@ -941,7 +1048,7 @@ function renderFavoritesPage() {
   if (!container) return;
   container.innerHTML = items.length
     ? items.map((property) => propCard(property)).join('')
-    : '<div class="seller-empty" style="grid-column:1/-1">Пока не добавили туда сюда</div>';
+    : '<div class="seller-empty" style="grid-column:1/-1">Здесь пока ничего нет </div>';
 }
 
 function toggleFav(btn) {

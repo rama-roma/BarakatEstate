@@ -1,4 +1,4 @@
-﻿import type { AuraPageName } from "@/content/aura-pages";
+import type { AuraPageName } from "@/content/aura-pages";
 import { auraPages } from "@/content/aura-pages";
 
 const heroMainImage =
@@ -97,6 +97,7 @@ function withRealEstateImages(html: string) {
         [[ICON_HOME]]
         <div class="gallery-count">+12 фото</div>
       </div>`,
+
       `<div class="gallery-thumb"><img src="${galleryInteriorImage}" alt="Интерьер квартиры" loading="lazy" /><div class="gallery-count">+12 фото</div></div>`,
     );
 }
@@ -106,14 +107,13 @@ function withBrand(html: string) {
     .replaceAll(`<div class="footer-logo"><div class="dot"></div>${legacyDomain}</div>`, `<div class="footer-logo">${brandLockup}</div>`)
     .replaceAll(
       `<div class="footer-logo" style="font-family:'Cormorant Garamond',serif;font-size:24px;font-weight:600;color:white;display:flex;align-items:center;gap:8px"><div class="dot"></div>${legacyDomain}</div>`,
-      `<div class="footer-logo" style="font-family:'Cormorant Garamond',serif;font-size:24px;font-weight:600;color:white;display:flex;align-items:center;gap:8px">${brandLockup}</div>`,
+      `<div class="footer-logo" style="font-family:'Montserrat',sans-serif;font-size:24px;font-weight:600;color:white;display:flex;align-items:center;gap:8px">${brandLockup}</div>`,
     )
     .replaceAll(legacyDomain, "Barakat Estate")
     .replaceAll("Aura Estate", "Barakat Estate")
     .replaceAll("Aura.", "Barakat Estate.")
     .replaceAll("Aura,", "Barakat Estate,")
     .replaceAll("Aura ", "Barakat Estate ")
-    .replaceAll("user@barakat.estate", "staff@barakat.estate")
     .replaceAll(`user@${legacyDomain}`, "staff@barakat.estate")
     .replaceAll(`info@${legacyDomain}`, "info@barakat.estate")
     .replaceAll(oldMapStart, "#2d2515 0%,#1f1a10 48%,#141008 100%")

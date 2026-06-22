@@ -1,8 +1,8 @@
-﻿"use client";
+"use client";
 
 import Image from "next/image";
 import Link from "next/link";
-import { Menu, Heart } from "lucide-react";
+import { Heart, Menu } from "lucide-react";
 import { usePathname } from "next/navigation";
 import { useState } from "react";
 
@@ -24,7 +24,7 @@ export default function Navigation() {
 
   return (
     <nav id="nav">
-      <Link  href="/" onClick={() => setOpen(false)}>
+      <Link className="nav-logo" href="/" onClick={() => setOpen(false)}>
         <Image src="/barakat.PNG" alt="Barakat Estate" width={100} height={78} priority />
       </Link>
 
@@ -43,7 +43,16 @@ export default function Navigation() {
 
       <div className="nav-actions">
         <span className="nav-city">Душанбе</span>
-        <button  className="mobile-menu-btn" type="button" onClick={() => setOpen((value) => !value)} aria-label="Меню">
+        <Link href="/favorites" className="nav-favorites-btn" aria-label="Избранное">
+          <Heart size={18} strokeWidth={2} />
+        </Link>
+        <button
+          className="mobile-menu-btn"
+          type="button"
+          onClick={() => setOpen((value) => !value)}
+          aria-label="Меню"
+          aria-expanded={open}
+        >
           <Menu size={22} strokeWidth={2} />
         </button>
       </div>
