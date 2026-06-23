@@ -11,6 +11,7 @@ const links = [
   { href: "/listings", label: "Объявления", match: "listings" },
   { href: "/map", label: "Карта", match: "map" },
   { href: "/services", label: "Услуги", match: "services" },
+  { href: "/about", label: "О нас", match: "about" },
 ];
 
 function activePage(pathname: string) {

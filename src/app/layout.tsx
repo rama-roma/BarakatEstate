@@ -1,8 +1,9 @@
-﻿import type { Metadata } from "next";
+import type { Metadata } from "next";
 import "./globals.css";
 import AuraRuntime from "@/components/AuraRuntime";
 import Navigation from "@/components/Navigation";
 import SiteFooter from "@/components/SiteFooter";
+import Script from "next/script";
 
 /* eslint-disable @next/next/no-page-custom-font */
 
@@ -24,6 +25,7 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
       </head>
       <body>
         <AuraRuntime />
+        <Script src="https://api-maps.yandex.ru/2.1/?apikey=&lang=ru_RU" strategy="afterInteractive" />
         <Navigation />
         {children}
         <SiteFooter />

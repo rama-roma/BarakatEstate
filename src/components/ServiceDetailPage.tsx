@@ -2,21 +2,35 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { ArrowRight, BadgeDollarSign, Brush, Check, FileCheck2, Hammer, Plus, Sparkles, SprayCan } from "lucide-react";
+import {
+  ArrowRight,
+  BadgeCheck,
+  BadgeDollarSign,
+  Brush,
+  Check,
+  ClipboardCheck,
+  FileCheck2,
+  Hammer,
+  PackageCheck,
+  PaintBucket,
+  Plus,
+  Ruler,
+  ShieldCheck,
+  Sparkles,
+  SprayCan,
+  TimerReset,
+  WalletCards,
+} from "lucide-react";
 import { useState } from "react";
-import type { FormEvent } from "react";
 
 import type { ServiceDetail } from "@/content/service-details";
 import { serviceList } from "@/content/service-details";
 
-type Status = {
-  type: "idle" | "success" | "error";
-  text: string;
-};
 
 const serviceIcons = {
   buyout: BadgeDollarSign,
   repair: Hammer,
+  putty: PaintBucket,
   design: Brush,
   cleaning: SprayCan,
   documents: FileCheck2,
@@ -65,50 +79,37 @@ const serviceCardImages: Record<string, string> = {
 const serviceFallbackImages = {
   buyout: "https://images.unsplash.com/photo-1560518883-ce09059eeffa?auto=format&fit=crop&w=640&q=80",
   repair: "https://images.unsplash.com/photo-1504307651254-35680f356dfd?auto=format&fit=crop&w=640&q=80",
+  putty: "https://images.unsplash.com/photo-1562259949-e8e7689d7828?auto=format&fit=crop&w=640&q=80",
   design: "https://images.unsplash.com/photo-1616486338812-3dadae4b4ace?auto=format&fit=crop&w=640&q=80",
   cleaning: "https://images.unsplash.com/photo-1581578731548-c64695cc6952?auto=format&fit=crop&w=640&q=80",
   documents: "https://images.unsplash.com/photo-1450101499163-c8848c66ca85?auto=format&fit=crop&w=640&q=80",
 } satisfies Record<ServiceDetail["theme"], string>;
 
+const puttyCardImages: Record<string, string> = {
+  "Осмотр объекта": "https://images.unsplash.com/photo-1621905252507-b35492cc74b4?auto=format&fit=crop&w=640&q=80",
+  "Подбор материалов": "https://images.unsplash.com/photo-1581092160607-ee22621dd758?auto=format&fit=crop&w=640&q=80",
+  "Шпаклевка стен": "https://images.unsplash.com/photo-1562259949-e8e7689d7828?auto=format&fit=crop&w=640&q=80",
+  "Проверка готовой поверхности": "https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?auto=format&fit=crop&w=640&q=80",
+  "Экономия бюджета": "https://images.unsplash.com/photo-1554224155-8d04cb21cd6c?auto=format&fit=crop&w=640&q=80",
+  "Меньше подрядчиков": "https://images.unsplash.com/photo-1521791136064-7986c2920216?auto=format&fit=crop&w=640&q=80",
+  "Быстрый старт ремонта": "https://images.unsplash.com/photo-1503387762-592deb58ef4e?auto=format&fit=crop&w=640&q=80",
+  "Понятные сроки работ": "https://images.unsplash.com/photo-1554224154-26032ffc0d07?auto=format&fit=crop&w=640&q=80",
+};
+
+const serviceItemIcons: Record<string, typeof Sparkles> = {
+  "Осмотр объекта": Ruler,
+  "Подбор материалов": PackageCheck,
+  "Шпаклевка стен": Brush,
+  "Проверка готовой поверхности": BadgeCheck,
+  "Экономия бюджета": WalletCards,
+  "Меньше подрядчиков": ShieldCheck,
+  "Быстрый старт ремонта": TimerReset,
+  "Понятные сроки работ": ClipboardCheck,
+};
+
 export default function ServiceDetailPage({ service }: { service: ServiceDetail }) {
-  const [status, setStatus] = useState<Status>({ type: "idle", text: "" });
-  const [sending, setSending] = useState(false);
   const [openFaq, setOpenFaq] = useState<string | null>(null);
   const ServiceIcon = serviceIcons[service.theme];
-
-  async function handleSubmit(event: FormEvent<HTMLFormElement>) {
-    event.preventDefault();
-    const form = event.currentTarget;
-    const formData = new FormData(form);
-    const payload = {
-      name: String(formData.get("name") || ""),
-      phone: String(formData.get("phone") || ""),
-      service: service.title,
-      message: String(formData.get("message") || ""),
-    };
-
-    setSending(true);
-    setStatus({ type: "idle", text: "" });
-
-    try {
-      const response = await fetch("/api/service-request", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(payload),
-      });
-      const data = (await response.json().catch(() => ({}))) as { error?: string };
-      if (!response.ok) throw new Error(data.error || "Не удалось отправить заявку");
-      form.reset();
-      setStatus({ type: "success", text: "Заявка отправлена в Telegram" });
-    } catch (error) {
-      setStatus({
-        type: "error",
-        text: error instanceof Error ? error.message : "Не удалось отправить заявку",
-      });
-    } finally {
-      setSending(false);
-    }
-  }
 
   return (
     <main className={`service-detail-page service-layout-${service.theme}`} data-theme={service.theme}>
@@ -123,9 +124,9 @@ export default function ServiceDetailPage({ service }: { service: ServiceDetail 
             </span>
             <h1>{service.title}</h1>
             <p>{service.description}</p>
-            <div className="service-detail-actions">
-              <a className="btn-primary" href="#service-request">
-                {service.cta}
+            <div className="service-detail-actions" style={{ display: "flex", gap: "16px", flexWrap: "wrap" }}>
+              <a className="btn-primary" href="tel:+992055077777">
+                Позвонить
               </a>
               <Link className="btn-secondary" href="/listings">
                 Смотреть объявления
@@ -170,16 +171,21 @@ export default function ServiceDetailPage({ service }: { service: ServiceDetail 
               <p>{section.text}</p>
             </div>
             <div className="service-detail-card-grid">
-              {section.items.map((item) => (
-                <article className="service-detail-card" key={item}>
-                  <div className="service-card-thumb" aria-hidden="true">
-                    <Image src={serviceCardImages[item] ?? serviceFallbackImages[service.theme]} alt="" fill sizes="160px" />
-                  </div>
-                  <ServiceIcon className="service-card-theme-icon" size={22} />
-                  <span></span>
-                  <strong>{item}</strong>
-                </article>
-              ))}
+              {section.items.map((item) => {
+                const ItemIcon = serviceItemIcons[item] ?? ServiceIcon;
+                const image = puttyCardImages[item] ?? serviceCardImages[item] ?? serviceFallbackImages[service.theme];
+
+                return (
+                  <article className="service-detail-card" key={item}>
+                    <div className="service-card-thumb" aria-hidden="true">
+                      <Image src={image} alt="" fill sizes="160px" />
+                    </div>
+                    <ItemIcon className="service-card-theme-icon" size={22} />
+                    <span></span>
+                    <strong>{item}</strong>
+                  </article>
+                );
+              })}
             </div>
           </div>
         </section>
@@ -209,48 +215,6 @@ export default function ServiceDetailPage({ service }: { service: ServiceDetail 
         </div>
       </section>
 
-      <section className="service-detail-form-section" id="service-request">
-        <div className="service-detail-shell service-detail-form-grid">
-          <div>
-            <span className="service-detail-eyebrow">Заявка</span>
-            <h2>Отправить заявку</h2>
-            <p>Укажите имя, телефон и коротко опишите задачу. Заявка сразу уйдет в Telegram.</p>
-          </div>
-          {status.type === "success" ? (
-            <div className="service-success-card" role="status" aria-live="polite">
-              <div className="service-success-check">
-                <Check size={48} />
-              </div>
-              <span>Заявка отправлена</span>
-              <h3>Спасибо, мы получили вашу заявку</h3>
-              <p>В ближайшее время свяжемся с вами, уточним детали и подскажем следующий шаг.</p>
-            </div>
-          ) : (
-          <form className="service-request-form service-detail-form" onSubmit={handleSubmit}>
-            <label>
-              <span>Имя</span>
-              <input name="name" placeholder="Ваше имя" required />
-            </label>
-            <label>
-              <span>Телефон</span>
-              <input name="phone" placeholder="+992" required />
-            </label>
-            <label className="full">
-              <span>Услуга</span>
-              <input name="serviceLabel" value={service.title} readOnly />
-            </label>
-            <label className="full">
-              <span>Комментарий</span>
-              <textarea name="message" placeholder="Адрес, сроки, что нужно сделать"></textarea>
-            </label>
-            <button className="btn-primary service-submit" type="submit" disabled={sending}>
-              {sending ? "Отправляем..." : service.cta}
-            </button>
-            {status.text ? <p className={`service-form-status ${status.type}`}>{status.text}</p> : null}
-          </form>
-          )}
-        </div>
-      </section>
 
       <section className="service-detail-section">
         <div className="service-detail-shell">

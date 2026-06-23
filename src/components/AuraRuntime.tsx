@@ -1,4 +1,4 @@
-﻿"use client";
+"use client";
 
 import Image from "next/image";
 import { useEffect } from "react";
@@ -52,8 +52,7 @@ export default function AuraRuntime() {
     <>
       <div className="page-loader" id="loader">
         <div className="loader-logo">
-          <Image src="/barakat.PNG" alt="Barakat Estate" width={64} height={64} priority />
-          <span>Barakat Estate</span>
+          <Image src="/barakat.PNG" alt="Barakat Estate" width={200} height={200} priority />
         </div>
       </div>
       <div className="notif" id="notif">

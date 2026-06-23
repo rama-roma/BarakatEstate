@@ -5,6 +5,12 @@ const properties = [];
 let adminProperties = [];
 
 function mediaUrl(media) {
+  if (!media) return '';
+  if (typeof media === 'string') {
+    if (/^(https?:|data:|blob:)/.test(media)) return media;
+    const baseUrl = window.BARAKAT_API_URL || 'http://localhost:3001';
+    return `${baseUrl}${media}`;
+  }
   const raw = Array.isArray(media) ? media[0] : media;
   const item = raw?.attributes || raw;
   const url = item?.url;
@@ -56,10 +62,12 @@ function mapAdminListing(entry) {
   const employee = relationData(item.employee);
   const seller = relationData(item.seller);
   const location = relationData(item.location) || relationData(item.coordinates) || item.geo || {};
-  const gallery = item.gallery?.data || item.gallery || [];
-  const galleryImages = Array.isArray(gallery)
-    ? gallery.map(mediaUrl).filter(Boolean)
-    : [mediaUrl(gallery)].filter(Boolean);
+  let galleryArray = [];
+  if (Array.isArray(item.gallery?.data)) galleryArray = item.gallery.data;
+  else if (Array.isArray(item.gallery)) galleryArray = item.gallery;
+  else if (typeof item.gallery === 'string') galleryArray = item.gallery.split(/\r?\n/).map(s => s.trim()).filter(Boolean);
+  
+  const galleryImages = galleryArray.map(mediaUrl).filter(Boolean);
   const mainImage = mediaUrl(item.mainImage?.data || item.mainImage) || galleryImages[0] || '';
   const images = [...new Set([mainImage, ...galleryImages].filter(Boolean))];
   const sellerAvatar = mediaUrl(seller?.avatar?.data || seller?.avatar) || mediaUrl(item.sellerAvatar) || mediaUrl(employee?.avatar?.data || employee?.avatar);
@@ -96,6 +104,9 @@ function mapAdminListing(entry) {
     district: mapDistrict(item.district),
     features: Array.isArray(item.features) ? item.features.join(' ') : item.features || '',
     description: item.description || '',
+    constructionStage: item.constructionStage || '',
+    renovation: item.renovation || '',
+    landmark: item.landmark || '',
     phone: sellerPhone,
     mapX: item.mapX ? `${item.mapX}%` : '',
     mapY: item.mapY ? `${item.mapY}%` : '',
@@ -204,6 +215,8 @@ const lucideIcons = {
   ruler: '<path d="M21.3 15.3a2.4 2.4 0 0 1 0 3.4l-2.6 2.6a2.4 2.4 0 0 1-3.4 0L2.7 8.7a2.4 2.4 0 0 1 0-3.4l2.6-2.6a2.4 2.4 0 0 1 3.4 0Z"/><path d="m14.5 12.5 2-2"/><path d="m11.5 9.5 2-2"/><path d="m8.5 6.5 2-2"/><path d="m17.5 15.5 2-2"/>',
   star: '<path d="M11.525 2.295a.53.53 0 0 1 .95 0l2.31 4.679a2.12 2.12 0 0 0 1.595 1.16l5.166.756a.53.53 0 0 1 .294.904l-3.736 3.638a2.12 2.12 0 0 0-.611 1.878l.882 5.14a.53.53 0 0 1-.771.56l-4.618-2.428a2.12 2.12 0 0 0-1.973 0L6.396 21.01a.53.53 0 0 1-.77-.56l.881-5.14a2.12 2.12 0 0 0-.611-1.878L2.16 9.795a.53.53 0 0 1 .294-.904l5.165-.755a2.12 2.12 0 0 0 1.597-1.16z"/>',
   check: '<path d="M20 6 9 17l-5-5"/>',
+  sparkles: '<path d="M9.937 15.5A2 2 0 0 0 8.5 14.063l-6.135-1.582a.5.5 0 0 1 0-.962L8.5 9.936A2 2 0 0 0 9.937 8.5l1.582-6.135a.5.5 0 0 1 .963 0L14.063 8.5A2 2 0 0 0 15.5 9.937l6.135 1.581a.5.5 0 0 1 0 .964L15.5 14.063a2 2 0 0 0-1.437 1.437l-1.582 6.135a.5.5 0 0 1-.963 0z"/><path d="M20 3v4"/><path d="M22 5h-4"/><path d="M4 17v2"/><path d="M5 18H3"/>',
+  construction: '<rect x="2" y="6" width="20" height="8" rx="1"/><path d="M17 14v7"/><path d="M7 14v7"/><path d="M17 3v3"/><path d="M7 3v3"/><path d="M10 14 2.3 6.3"/><path d="M14 6l7.7 7.7"/><path d="m8 6 8 8"/>',
 };
 
 function lucideIcon(name, className = 'lucide-inline') {
@@ -311,13 +324,15 @@ function propCard(p, onclick) {
     <div class="prop-body">
       <div class="prop-price-row">
         <div class="prop-price">${p.price}</div>
-        <div class="prop-price-note">${p.priceNote}</div>
+        <div class="prop-price-note">${p.priceNote}${p.propertyType ? ` &middot; ${p.propertyType}` : ''}</div>
       </div>
-      <div class="prop-addr">${lucideIcon('mapPin')} ${p.addr}</div>
-      <div class="prop-meta">
+      <div class="prop-addr">${lucideIcon('mapPin')} ${p.addr} ${p.landmark ? `<span style="opacity: 0.7; font-size: 0.9em;">(Ор: ${p.landmark})</span>` : ''}</div>
+      <div class="prop-meta" style="flex-wrap: wrap; height: auto; overflow: visible; white-space: normal;">
         <span>${lucideIcon('bed')} <strong>${p.rooms}</strong> комн</span>
         <span>${lucideIcon('ruler')} <strong>${p.area}</strong> м²</span>
         <span>${lucideIcon('building2')} <strong>${p.floor}</strong> эт</span>
+        ${p.renovation && p.renovation !== 'Любая' ? `<span>${lucideIcon('sparkles')} ${p.renovation}</span>` : ''}
+        ${p.constructionStage && p.constructionStage !== 'Любая' ? `<span>${lucideIcon('construction')} ${p.constructionStage}</span>` : ''}
       </div>
       <div class="prop-agent">
         <div class="agent-ava">${p.agentAvatar ? `<img src="${p.agentAvatar}" alt="${p.agentName}" />` : p.agent}</div>
@@ -407,9 +422,9 @@ function renderMapResults() {
     count.textContent = `Показано: ${items.length} объектов`;
   }
 
-  const fullMap = document.getElementById('leaflet-full-map');
-  if (fullMap && fullMap._leaflet) {
-    addLeafletMarkers(fullMap, items);
+  const fullMap = document.getElementById('yandex-full-map');
+  if (fullMap && fullMap._ymap) {
+    addYandexMarkers(fullMap, items);
   }
 }
 
@@ -430,99 +445,116 @@ function loadScript(src) {
   });
 }
 
-function loadLeaflet() {
-  if (window.L) return Promise.resolve(window.L);
-  if (window.__leafletLoading) return window.__leafletLoading;
-  window.__leafletLoading = loadScript('https://unpkg.com/leaflet@1.9.4/dist/leaflet.js').then(() => window.L);
-  return window.__leafletLoading;
+function loadYandexMap() {
+  return new Promise((resolve) => {
+    if (window.ymaps && window.ymaps.Map) return resolve(window.ymaps);
+    if (window.__ymapsLoading) return resolve(window.__ymapsLoading);
+
+    window.__ymapsLoading = new Promise((res) => {
+      const checkYmaps = setInterval(() => {
+        if (window.ymaps && window.ymaps.ready) {
+          clearInterval(checkYmaps);
+          window.ymaps.ready(() => res(window.ymaps));
+        }
+      }, 100);
+    });
+    return resolve(window.__ymapsLoading);
+  });
 }
 
-function createLeafletMap(elementId, center, zoom = 12) {
+function createYandexMap(elementId, center, zoom = 12) {
   const container = document.getElementById(elementId);
-  if (!container || !window.L) return null;
-  if (container._leaflet) return container._leaflet;
+  if (!container || !window.ymaps) return null;
+  if (container._ymap) return container._ymap;
 
-  const map = window.L.map(container, {
-    zoomControl: false,
-    attributionControl: false,
-  }).setView(center, zoom);
+  const map = new window.ymaps.Map(container, {
+    center: center,
+    zoom: zoom,
+    controls: ['zoomControl', 'fullscreenControl']
+  });
 
-  window.L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-    maxZoom: 19,
-    minZoom: 5,
-    attribution: '&copy; OpenStreetMap contributors',
-  }).addTo(map);
-
-  container._leaflet = map;
-  container._leafletMarkers = window.L.layerGroup().addTo(map);
+  container._ymap = map;
+  container._ymapMarkers = new window.ymaps.GeoObjectCollection();
+  map.geoObjects.add(container._ymapMarkers);
   return map;
 }
 
-function addLeafletMarkers(container, items) {
-  if (!container || !container._leaflet || !window.L) return;
-  const markers = container._leafletMarkers || window.L.layerGroup().addTo(container._leaflet);
-  markers.clearLayers();
-  container._leafletMarkers = markers;
+function addYandexMarkers(container, items) {
+  if (!container || !container._ymap || !window.ymaps) return;
+  const markersCollection = container._ymapMarkers;
+  markersCollection.removeAll();
 
   const validItems = (items || []).filter((item) => typeof item.lat === 'number' && typeof item.lng === 'number');
+  
+  const MarkerLayout = window.ymaps.templateLayoutFactory.createClass('<div class="ymap-custom-marker"></div>');
+
   validItems.forEach((item) => {
-    const markerHtml = `
-      <div class="custom-map-marker house-marker">
-        <svg viewBox="0 0 24 24" fill="currentColor" stroke="none" xmlns="http://www.w3.org/2000/svg">
-          <path d="M3 10.5L12 3l9 7.5V20a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V10.5Z" />
-          <path d="M9 22V14h6v8" fill="#fff" />
-          <path d="M9 12h6" stroke="#fff" stroke-width="1.5" />
-        </svg>
+    const balloonContent = `
+      <div class="ymap-balloon-card" onclick="navigate('property', '${item.id}')" style="cursor: pointer;">
+        <img src="${Array.isArray(item.images) && item.images.length ? item.images[0] : item.image}" alt="${item.addr}" />
+        <div class="ymap-balloon-info">
+          <div class="ymap-balloon-price">${item.price}</div>
+          <div class="ymap-balloon-addr">${item.addr}</div>
+          <div class="ymap-balloon-meta">
+            <span>${item.rooms ? item.rooms + ' комн' : ''}</span>
+            <span>${item.area ? item.area + ' м²' : ''}</span>
+          </div>
+        </div>
       </div>
     `;
 
-    const marker = window.L.marker([item.lat, item.lng], {
-      icon: window.L.divIcon({
-        className: 'custom-map-marker',
-        html: markerHtml,
-        iconSize: [28, 28],
-        iconAnchor: [14, 28],
-        popupAnchor: [0, -28],
-      }),
-    }).addTo(markers);
+    const marker = new window.ymaps.Placemark([item.lat, item.lng], {
+      balloonContent: balloonContent
+    }, {
+      iconLayout: MarkerLayout,
+      iconShape: { type: 'Circle', coordinates: [0, 0], radius: 10 },
+      balloonPanelMaxMapArea: 0,
+      hideIconOnBalloonOpen: false,
+      balloonOffset: [0, -15]
+    });
 
-    marker.bindPopup(`<strong>${item.title || item.addr}</strong><br>${item.price}<br><small>${item.lat.toFixed(5)}, ${item.lng.toFixed(5)}</small>`);
+    marker.events.add('mouseenter', function (e) {
+      e.get('target').balloon.open();
+    });
+
+    markersCollection.add(marker);
   });
 
-  if (validItems.length) {
-    const bounds = window.L.latLngBounds(validItems.map((item) => [item.lat, item.lng]));
-    container._leaflet.fitBounds(bounds.pad(0.3));
+  if (validItems.length > 0) {
+    container._ymap.setBounds(markersCollection.getBounds(), { checkZoomRange: true, zoomMargin: 30 }).then(() => {
+        if(container._ymap.getZoom() > 16) container._ymap.setZoom(16);
+    });
   }
 }
 
-async function initLeafletMaps() {
-  await loadLeaflet().catch(() => null);
-  if (!window.L) return;
+async function initYandexMaps() {
+  await loadYandexMap().catch(() => null);
+  if (!window.ymaps) return;
 
-  const preview = document.getElementById('preview-leaflet-map');
+  const preview = document.getElementById('preview-yandex-map');
   if (preview) {
-    createLeafletMap('preview-leaflet-map', [38.556, 68.783], 12);
-    addLeafletMarkers(preview, getAllProperties());
+    createYandexMap('preview-yandex-map', [38.556, 68.783], 12);
+    addYandexMarkers(preview, getAllProperties());
   }
 
-  const full = document.getElementById('leaflet-full-map');
+  const full = document.getElementById('yandex-full-map');
   if (full) {
-    createLeafletMap('leaflet-full-map', [38.556, 68.783], 12);
-    addLeafletMarkers(full, getFilteredMapProperties());
+    createYandexMap('yandex-full-map', [38.556, 68.783], 12);
+    addYandexMarkers(full, getFilteredMapProperties());
   }
 }
 
 function renderPropertyDetailMap(property) {
   if (!property || typeof property.lat !== 'number' || typeof property.lng !== 'number') return;
-  const container = document.getElementById('detail-leaflet-map');
+  const container = document.getElementById('detail-yandex-map');
   if (!container) return;
 
-  return loadLeaflet().then(() => {
-    const map = createLeafletMap('detail-leaflet-map', [property.lat, property.lng], 15);
+  return loadYandexMap().then(() => {
+    const map = createYandexMap('detail-yandex-map', [property.lat, property.lng], 15);
     if (!map) return;
 
-    addLeafletMarkers(container, [property]);
-    map.setView([property.lat, property.lng], 15);
+    addYandexMarkers(container, [property]);
+    map.setCenter([property.lat, property.lng], 15);
     const coords = document.getElementById('detail-map-coords');
     if (coords) coords.textContent = `${property.lat.toFixed(5)}, ${property.lng.toFixed(5)}`;
   }).catch(() => null);
@@ -585,21 +617,31 @@ async function hydrateAuraPage(page) {
   if (page === 'favorites') renderFavoritesPage();
   if (page === 'agent') renderCards('agent-grid', 6);
   if (page === 'services') setupServiceRequestForm();
-  await initLeafletMaps();
+  await initYandexMaps();
   initCardSliders();
 }
 
 function renderCatalogState() {
-  const total = getAllProperties().length;
+  const allProps = getAllProperties();
+  const total = allProps.length;
+  
+  const uniqueSellers = new Set(allProps.map(p => p.agent || p.agentName || 'Unknown')).size;
+  const uniqueDistricts = new Set(allProps.map(p => p.district || p.addr || 'Unknown')).size;
 
   document.querySelectorAll('.stat-num').forEach((el, index) => {
-    if (index === 0) el.innerHTML = `${total}<span>+</span>`;
+    if (index === 0) el.innerHTML = `<span class="total-num">${total}</span><span>+</span>`;
   });
   document.querySelectorAll('.listings-count').forEach((el) => {
     el.innerHTML = `Найдено: <strong>${total} объектов</strong>`;
   });
   document.querySelectorAll('.total-num').forEach((el) => {
     el.textContent = total;
+  });
+  document.querySelectorAll('.total-sellers').forEach((el) => {
+    el.textContent = uniqueSellers;
+  });
+  document.querySelectorAll('.total-districts').forEach((el) => {
+    el.textContent = uniqueDistricts;
   });
   document.querySelectorAll('#map-results-count').forEach((el) => {
     el.textContent = `Показано: ${total} объектов`;
@@ -703,6 +745,44 @@ function navigate(page, id) {
   }
   window.location.href = id ? `${url}?id=${encodeURIComponent(id)}` : url;
 }
+
+function navigateWithFilters() {
+  const page = document.getElementById('page-home');
+  if (!page) return navigate('listings');
+
+  const selects = page.querySelectorAll('.search-row .s-select');
+  const type = selects[0]?.value || '';
+  
+  const ext = document.getElementById('extended-filters-panel');
+  const stage = ext?.querySelectorAll('.s-select')[1]?.value || '';
+  const district = ext?.querySelectorAll('.s-select')[2]?.value || '';
+  const renovation = ext?.querySelectorAll('.s-select')[3]?.value || '';
+  const inputs = ext?.querySelectorAll('.s-input') || [];
+  const minArea = inputs[0]?.value || '';
+  const maxArea = inputs[1]?.value || '';
+  const minFloor = inputs[2]?.value || '';
+  const maxFloor = inputs[3]?.value || '';
+  const landmark = inputs[4]?.value || '';
+  
+  const params = new URLSearchParams();
+  if (type && type !== 'Тип недвижимости') params.set('type', type);
+  if (stage && stage !== 'Любая') params.set('stage', stage);
+  if (district && district !== 'Все районы') params.set('district', district);
+  if (renovation && renovation !== 'Выберите типы ремонта') params.set('renovation', renovation);
+  if (landmark) params.set('landmark', landmark);
+  if (maxArea) params.set('maxArea', maxArea);
+
+  const activeTab = page.querySelector('.s-tab.active');
+  if (activeTab) {
+    if (activeTab.textContent.includes('Купить')) params.set('deal', 'Продажа');
+    if (activeTab.textContent.includes('Снять')) params.set('deal', 'Аренда');
+  }
+
+  const qs = params.toString();
+  const url = routeForPage('listings');
+  window.location.href = qs ? `${url}?${qs}` : url;
+}
+
 function setSearchTab(el, type) {
   document.querySelectorAll('.s-tab').forEach(t => t.classList.remove('active'));
   el.classList.add('active');
@@ -764,25 +844,38 @@ function getListingsFilters() {
   const propertyTypeSelect = document.querySelectorAll('.listings-page .s-select')[0];
   const roomsSelect = document.querySelectorAll('.listings-page .s-select')[1];
   const sortSelect = document.querySelector('.sort-select');
-  const priceRange = Array.from(document.querySelectorAll('.filter-group')).find(
-    (item) => item.querySelector('h4')?.textContent?.trim() === 'Цена (TJS)',
-  )?.querySelector('.range-input');
-  const areaRange = Array.from(document.querySelectorAll('.filter-group')).find(
-    (item) => item.querySelector('h4')?.textContent?.trim() === 'Площадь (м²)',
-  )?.querySelector('.range-input');
+  const priceGroup = Array.from(document.querySelectorAll('.filter-group')).find(
+    (item) => item.querySelector('h4')?.textContent?.trim() === 'Цена (TJS)'
+  );
+  const priceInputs = priceGroup?.querySelectorAll('input[type="number"]');
+  const minPrice = priceInputs ? Number(priceInputs[0]?.value) : 0;
+  const maxPrice = priceInputs ? Number(priceInputs[1]?.value) : 0;
 
+  const areaGroup = Array.from(document.querySelectorAll('.filter-group')).find(
+    (item) => item.querySelector('h4')?.textContent?.trim() === 'Площадь (м²)'
+  );
+  const areaInputs = areaGroup?.querySelectorAll('input[type="number"]');
+  const minArea = areaInputs ? Number(areaInputs[0]?.value) : 0;
+  const maxArea = areaInputs ? Number(areaInputs[1]?.value) : urlParams.get('maxArea') ? Number(urlParams.get('maxArea')) : 0;
+
+  const urlParams = new URLSearchParams(window.location.search);
+  
   return {
-    search,
-    propertyType: propertyTypeSelect?.value || '',
+    search: search || urlParams.get('landmark') || '', // Map landmark to search
+    propertyType: propertyTypeSelect?.value !== 'Все типы' ? propertyTypeSelect?.value : (urlParams.get('type') || ''),
     rooms: roomsSelect?.value || '',
     sort: sortSelect?.value || '',
-    deals: selectedCheckboxValues('Тип сделки'),
-    types: selectedCheckboxValues('Тип жилья'),
-    districts: selectedCheckboxValues('Район'),
+    deals: selectedCheckboxValues('Тип сделки').length ? selectedCheckboxValues('Тип сделки') : (urlParams.get('deal') ? [urlParams.get('deal')] : []),
+    types: selectedCheckboxValues('Тип недвижимости').length ? selectedCheckboxValues('Тип недвижимости') : (urlParams.get('type') ? [urlParams.get('type')] : []),
+    districts: selectedCheckboxValues('Район').length ? selectedCheckboxValues('Район') : (urlParams.get('district') ? [urlParams.get('district')] : []),
     features: selectedCheckboxValues('Особенности'),
     roomChip: getRoomFilter(),
-    maxPrice: Number(priceRange?.value || 0),
-    maxArea: Number(areaRange?.value || 0),
+    minPrice: minPrice,
+    maxPrice: maxPrice,
+    minArea: minArea,
+    maxArea: maxArea,
+    renovation: urlParams.get('renovation') || '',
+    constructionStage: urlParams.get('stage') || '',
   };
 }
 
@@ -879,8 +972,14 @@ function propertyMatchesFilters(property, filters) {
   }
 
   const price = normalizeNumber(property.price);
-  if (filters.maxPrice && price && price > filters.maxPrice) return false;
-  if (filters.maxArea && Number(property.area) && Number(property.area) > filters.maxArea) return false;
+  if (filters.minPrice && price < filters.minPrice) return false;
+  if (filters.maxPrice && price > filters.maxPrice) return false;
+
+  const area = Number(property.area);
+  if (filters.minArea && area < filters.minArea) return false;
+  if (filters.maxArea && area > filters.maxArea) return false;
+  if (filters.renovation && property.renovation !== filters.renovation) return false;
+  if (filters.constructionStage && property.constructionStage !== filters.constructionStage) return false;
 
   return true;
 }
@@ -930,6 +1029,32 @@ function renderPropertyDetail() {
   const contactMeta = document.querySelector('.ca-info small');
   const contactAgent = document.querySelector('.contact-agent');
   const amenitiesGrid = document.querySelector('.amenities-grid');
+  const detailChips = document.querySelector('.detail-chips');
+
+  if (detailChips) {
+    let chipsHtml = '';
+    if (property.propertyType) {
+      chipsHtml += `<div class="detail-chip">${lucideIcon('keyRound')} ${property.propertyType}</div>`;
+    }
+    if (property.rooms) {
+      const roomNum = Number(property.rooms) || 0;
+      const roomText = roomNum === 1 ? 'комната' : (roomNum > 1 && roomNum < 5) ? 'комнаты' : 'комнат';
+      chipsHtml += `<div class="detail-chip">${lucideIcon('bed')} ${property.rooms} ${roomText}</div>`;
+    }
+    if (property.area) {
+      chipsHtml += `<div class="detail-chip">${lucideIcon('ruler')} ${property.area} м²</div>`;
+    }
+    if (property.floor) {
+      chipsHtml += `<div class="detail-chip">${lucideIcon('building2')} ${property.floor} эт</div>`;
+    }
+    if (property.renovation && property.renovation !== 'Любая') {
+      chipsHtml += `<div class="detail-chip">${lucideIcon('sparkles')} ${property.renovation}</div>`;
+    }
+    if (property.constructionStage && property.constructionStage !== 'Любая') {
+      chipsHtml += `<div class="detail-chip">${lucideIcon('construction')} ${property.constructionStage}</div>`;
+    }
+    detailChips.innerHTML = chipsHtml;
+  }
 
   if (detailPrice) detailPrice.textContent = property.price;
   if (detailPricePer) {
@@ -965,6 +1090,28 @@ function renderPropertyDetail() {
   if (contactName) contactName.textContent = property.agentName;
   if (contactMeta) {
     contactMeta.innerHTML = `${lucideIcon('star', 'lucide-inline lucide-star')} ${property.rating || 5} · ${property.deals || 0} сделок`;
+  }
+  
+  const contactPhoneDisplay = document.getElementById('contact-phone-display');
+  const contactWhatsapp = document.getElementById('contact-whatsapp');
+  const contactTelegram = document.getElementById('contact-telegram');
+
+  if (contactPhoneDisplay) {
+    const phone = property.phone || '+992 000 00 00 00';
+    contactPhoneDisplay.textContent = phone;
+    contactPhoneDisplay.href = `tel:${phone.replace(/[^0-9+]/g, '')}`;
+  }
+  if (contactWhatsapp) {
+    const phoneNum = (property.phone || '').replace(/[^0-9]/g, '');
+    contactWhatsapp.href = phoneNum ? `https://wa.me/${phoneNum}` : '#';
+    if (phoneNum) contactWhatsapp.target = '_blank';
+    contactWhatsapp.onclick = phoneNum ? null : () => showNotif('Номер не указан');
+  }
+  if (contactTelegram) {
+    const phoneNum = (property.phone || '').replace(/[^0-9]/g, '');
+    contactTelegram.href = phoneNum ? `https://t.me/+${phoneNum}` : '#';
+    if (phoneNum) contactTelegram.target = '_blank';
+    contactTelegram.onclick = phoneNum ? null : () => showNotif('Номер не указан');
   }
   if (contactAgent) {
     contactAgent.onclick = () => {
@@ -1141,8 +1288,35 @@ function hideLoader() {
   document.getElementById('loader')?.classList.add('hidden');
 }
 
+// ── RANGE INPUTS ──
+function initRangeInputs() {
+  document.querySelectorAll('.range-input').forEach(input => {
+    input.addEventListener('input', (e) => {
+      const val = parseInt(e.target.value, 10);
+      const isPrice = e.target.max > 1000;
+      
+      const valsContainer = e.target.nextElementSibling;
+      if (valsContainer && valsContainer.classList.contains('range-vals')) {
+        const spans = valsContainer.querySelectorAll('span');
+        if (spans.length >= 2) {
+          const formatted = isPrice ? val.toLocaleString('ru-RU').replace(/,/g, ' ') + ' смн' : val + ' м²';
+          spans[0].textContent = 'до ' + formatted;
+        }
+      }
+
+      const percent = ((val - e.target.min) / (e.target.max - e.target.min)) * 100;
+      e.target.style.background = `linear-gradient(to right, #d4af37 0%, #d4af37 ${percent}%, #444 ${percent}%, #444 100%)`;
+    });
+    
+    // Trigger initial state
+    input.dispatchEvent(new Event('input'));
+  });
+}
+
 // First render
 setupHomeServices();
 renderCards('featured-grid', 6);
-initLeafletMaps();
+initYandexMaps();
+initRangeInputs();
+
 
