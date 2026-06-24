@@ -109,6 +109,9 @@ const serviceItemIcons: Record<string, typeof Sparkles> = {
 
 export default function ServiceDetailPage({ service }: { service: ServiceDetail }) {
   const [openFaq, setOpenFaq] = useState<string | null>(null);
+  const [phone, setPhone] = useState("");
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isSubmitted, setIsSubmitted] = useState(false);
   const ServiceIcon = serviceIcons[service.theme];
 
   return (
@@ -211,6 +214,106 @@ export default function ServiceDetailPage({ service }: { service: ServiceDetail 
                 <p>{item.answer}</p>
               </article>
             ))}
+          </div>
+        </div>
+      </section>
+
+      <style dangerouslySetInnerHTML={{__html: `
+        .beautiful-input { background: rgba(255, 255, 255, 0.6); border: 1px solid var(--gold); transition: all 0.3s ease; text-align: left; backdrop-filter: blur(4px); }
+        .beautiful-input:focus { background: white; box-shadow: 0 4px 15px rgba(212, 175, 55, 0.2); outline: none; }
+        .minimal-btn { transition: all 0.3s ease; }
+        .minimal-btn:hover { transform: translateY(-2px); filter: brightness(0.95); box-shadow: 0 8px 24px rgba(212, 175, 55, 0.3); }
+        .minimal-btn:active { transform: translateY(0); }
+        @media (max-width: 768px) {
+          .service-request-form {
+            grid-template-columns: 1fr !important;
+            padding: 32px 24px !important;
+            gap: 16px !important;
+          }
+        }
+      `}} />
+      <section className="service-request-section" style={{ padding: "80px 0", background: "var(--ink)", color: "white", display: "flex", justifyContent: "center" }}>
+        <div className="container" style={{ display: "flex", flexDirection: "column", alignItems: "center", width: "100%" }}>
+          <div style={{ textAlign: "center", maxWidth: "600px", margin: "0 auto 40px auto", display: "flex", flexDirection: "column", alignItems: "center" }}>
+            <h2 style={{ color: "white", marginBottom: "12px", fontSize: "32px", fontWeight: 400, textAlign: "center" }}>Оставить заявку</h2>
+            <p style={{ color: "rgba(255,255,255,0.6)", fontSize: "16px", fontWeight: 300, textAlign: "center", margin: 0 }}>Заполните форму, и мы свяжемся с вами в ближайшее время для обсуждения деталей.</p>
+          </div>
+          
+          <div style={{ width: "100%", maxWidth: "600px" }}>
+            {isSubmitted ? (
+              <div style={{ background: "linear-gradient(145deg, #ffffff 0%, #f0f4f8 100%)", border: "1px solid var(--gold)", borderRadius: "20px", padding: "48px 32px", textAlign: "center", color: "var(--ink)", boxShadow: "0 20px 50px rgba(0,0,0,0.3)" }}>
+                <div style={{ display: "inline-flex", alignItems: "center", justifyContent: "center", width: "88px", height: "88px", borderRadius: "50%", background: "rgba(34, 197, 94, 0.1)", marginBottom: "24px" }}>
+                  <div style={{ display: "inline-flex", alignItems: "center", justifyContent: "center", width: "64px", height: "64px", borderRadius: "50%", background: "linear-gradient(135deg, #22c55e 0%, #15803d 100%)", color: "white", boxShadow: "0 10px 25px rgba(22, 163, 74, 0.4)" }}>
+                    <Check size={32} strokeWidth={3} />
+                  </div>
+                </div>
+                <h3 style={{ fontSize: "22px", fontWeight: 500, marginBottom: "8px" }}>Спасибо за заявку</h3>
+                <p style={{ fontSize: "16px", color: "var(--muted)" }}>Мы ответим вам как можно быстрее.</p>
+              </div>
+            ) : (
+              <form 
+                className="service-request-form"
+                style={{ background: "linear-gradient(135deg, #ffffff 0%, #f1f5f9 100%)", border: "1px solid var(--gold)", padding: "48px", borderRadius: "20px", width: "100%", color: "var(--ink)", display: "grid", gridTemplateColumns: "1fr 1fr", gap: "24px", boxShadow: "0 20px 50px rgba(0,0,0,0.3)" }}
+                onSubmit={async (e) => {
+                  e.preventDefault();
+                  if (phone.replace(/\D/g, "").length < 12) {
+                    alert('Пожалуйста, введите корректный номер телефона.');
+                    return;
+                  }
+                  setIsSubmitting(true);
+                  
+                  const formData = new FormData(e.currentTarget);
+                  const data = {
+                    name: formData.get('name'),
+                    phone: formData.get('phone'),
+                    message: formData.get('message'),
+                    service: service.shortTitle
+                  };
+                  
+                  try {
+                    const res = await fetch('/api/service-request', {
+                      method: 'POST',
+                      headers: { 'Content-Type': 'application/json' },
+                      body: JSON.stringify(data)
+                    });
+                    
+                    if (!res.ok) throw new Error('Ошибка сервера');
+                    setIsSubmitted(true);
+                  } catch (err) {
+                    console.error(err);
+                    alert('Ошибка при отправке. Попробуйте позже.');
+                  } finally {
+                    setIsSubmitting(false);
+                  }
+                }}
+              >
+                <label style={{ display: "block" }}>
+                  <span style={{ display: "block", marginBottom: "8px", fontWeight: 500, fontSize: "14px", color: "var(--ink)" }}>Ваше имя</span>
+                  <input type="text" name="name" className="beautiful-input" required placeholder="Введите имя" style={{ width: "100%", padding: "16px 20px", borderRadius: "12px", color: "var(--ink)", fontSize: "15px" }} />
+                </label>
+                <label style={{ display: "block" }}>
+                  <span style={{ display: "block", marginBottom: "8px", fontWeight: 500, fontSize: "14px", color: "var(--ink)" }}>Ваш телефон</span>
+                  <input type="tel" name="phone" className="beautiful-input" required placeholder="+992 000 00 0000" value={phone} onChange={(e) => {
+                    let numbers = e.target.value.replace(/\D/g, "");
+                    if (numbers.startsWith("992")) numbers = numbers.slice(3);
+                    let formatted = "+992";
+                    if (numbers.length > 0) formatted += " " + numbers.substring(0, 3);
+                    if (numbers.length > 3) formatted += " " + numbers.substring(3, 5);
+                    if (numbers.length > 5) formatted += " " + numbers.substring(5, 9);
+                    setPhone(formatted);
+                  }} style={{ width: "100%", padding: "16px 20px", borderRadius: "12px", color: "var(--ink)", fontSize: "15px" }} />
+                </label>
+                <label style={{ display: "block", gridColumn: "1 / -1" }}>
+                  <span style={{ display: "block", marginBottom: "8px", fontWeight: 500, fontSize: "14px", color: "var(--ink)" }}>Комментарий</span>
+                  <textarea name="message" className="beautiful-input" required placeholder="Детали заявки..." style={{ width: "100%", padding: "16px 20px", borderRadius: "12px", color: "var(--ink)", fontSize: "15px", minHeight: "120px", resize: "none" }}></textarea>
+                </label>
+                <div style={{ textAlign: "center", gridColumn: "1 / -1", marginTop: "8px" }}>
+                  <button type="submit" disabled={isSubmitting} className="minimal-btn" style={{ padding: "18px 48px", border: "none", borderRadius: "12px", background: "var(--gold)", color: "var(--ink)", fontWeight: 600, cursor: "pointer", fontSize: "16px", width: "100%", opacity: isSubmitting ? 0.7 : 1 }}>
+                    {isSubmitting ? 'Отправка...' : 'Отправить заявку'}
+                  </button>
+                </div>
+              </form>
+            )}
           </div>
         </div>
       </section>

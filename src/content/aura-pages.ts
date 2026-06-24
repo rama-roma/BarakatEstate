@@ -46,9 +46,9 @@ export const auraPages = {
             <div class="hero-card hc-main" onclick="navigate('property')">
               <div class="hc-img">[[IMG_CITY]]</div>
               <div class="hc-tag">Продажа</div>
-              <div class="hc-badge">[[ICON_STAR]] 4.9</div>
+              <div class="hc-badge"></div>
               <div class="hc-body">
-                <div class="hc-price">900 000 смн</div>
+                <div class="hc-price">900 000 с</div>
                 <div class="hc-addr">[[ICON_MAP_PIN]] Исмоили Сомони, 14</div>
                 <div class="hc-meta">
                   <span>[[ICON_BED]] 3 комн</span>
@@ -143,12 +143,16 @@ export const auraPages = {
         <div style="flex: 1.2;">
           <select class="s-select" style="width: 100%; height: 48px; padding-left: 16px;">
             <option>Тип недвижимости</option>
+            <option>Квартира</option>
             <option>Вторичка</option>
             <option>Новостройки</option>
             <option>Дома</option>
+            <option>Дом</option>
             <option>Земельные участки</option>
             <option>Коммерческая</option>
-            <option>Квартира</option>
+            <option>Дача</option>
+            <option>Парковка</option>
+            <option>Комната</option>
           </select>
         </div>
         
@@ -318,6 +322,18 @@ export const auraPages = {
           <p>Подготовка и проверка документов для сделки с недвижимостью</p>
           <div class="service-price">По запросу</div>
         </div>
+        <div class="service-card">
+          <div class="service-icon">[[ICON_SPARKLES]]</div>
+          <h3>Шпаклевка бесплатно</h3>
+          <p>При покупке жилья — шпаклевка стен в подарок!</p>
+          <div class="service-price">Бесплатно</div>
+        </div>
+        <div class="service-card">
+          <div class="service-icon">[[ICON_STAR]]</div>
+          <h3>Клининг</h3>
+          <p>Уборка перед показом, после ремонта или перед заселением</p>
+          <div class="service-price">По объему работ</div>
+        </div>
       </div>
     </div>
   </section>
@@ -395,13 +411,13 @@ export const auraPages = {
     </div>
 
     <!-- SEARCH BAR IN LISTINGS -->
-    <div style="background:white;padding:16px 40px;border-bottom:1px solid var(--border)">
-      <div style="max-width:1280px;margin:0 auto;display:flex;gap:10px;align-items:center">
+    <div style="background:white;padding:16px var(--site-pad);border-bottom:1px solid var(--border)">
+      <div class="search-row" style="max-width:1280px;margin:0 auto;">
         <div class="s-input-wrap" style="flex:1">
           <svg width="18" height="18" fill="none" stroke="#8A7F6A" stroke-width="2"><circle cx="8" cy="8" r="6"/><path d="m14 14-3-3"/></svg>
           <input class="s-input" placeholder="Поиск по адресу..."/>
         </div>
-        <select class="s-select"><option>Все типы</option><option>Квартира</option><option>Дом</option></select>
+        <select class="s-select"><option>Все типы</option><option>Квартира</option><option>Вторичка</option><option>Новостройки</option><option>Дома</option><option>Дом</option><option>Земельные участки</option><option>Коммерческая</option><option>Дача</option><option>Парковка</option><option>Комната</option></select>
         <select class="s-select"><option>Комнат</option><option>1</option><option>2</option><option>3</option><option>4+</option></select>
         <button class="s-btn">Найти</button>
       </div>
@@ -421,10 +437,15 @@ export const auraPages = {
         <div class="filter-group">
           <h4>Тип недвижимости</h4>
           <label class="filter-check"><input type="checkbox" /><label>Квартира</label></label>
+          <label class="filter-check"><input type="checkbox" /><label>Вторичка</label></label>
+          <label class="filter-check"><input type="checkbox" /><label>Новостройки</label></label>
+          <label class="filter-check"><input type="checkbox" /><label>Дома</label></label>
           <label class="filter-check"><input type="checkbox" /><label>Дом</label></label>
-          <label class="filter-check"><input type="checkbox" /><label>Студия</label></label>
+          <label class="filter-check"><input type="checkbox" /><label>Земельные участки</label></label>
           <label class="filter-check"><input type="checkbox" /><label>Коммерческая</label></label>
-          <label class="filter-check"><input type="checkbox" /><label>Новостройка</label></label>
+          <label class="filter-check"><input type="checkbox" /><label>Дача</label></label>
+          <label class="filter-check"><input type="checkbox" /><label>Парковка</label></label>
+          <label class="filter-check"><input type="checkbox" /><label>Комната</label></label>
         </div>
 
         <div class="filter-group">
@@ -624,12 +645,55 @@ export const auraPages = {
           </ul>
         </div>
 
-        <div style="text-align: center; background: linear-gradient(135deg, #1e2d4a 0%, #16213e 100%); color: white; padding: 40px; border-radius: 24px; box-shadow: 0 20px 40px rgba(0,0,0,0.1);">
-          <h3 style="font-size: 24px; font-weight: 300; margin-bottom: 16px;">Готовы воспользоваться предложением?</h3>
-          <p style="font-size: 16px; color: rgba(255,255,255,0.8); margin-bottom: 32px;">Свяжитесь с нами прямо сейчас, чтобы узнать все подробности акции и начать подбор вашей идеальной квартиры.</p>
-          <a href="tel:+992055077777" style="display: inline-flex; align-items: center; gap: 12px; background: var(--gold); color: var(--ink); padding: 16px 32px; border-radius: 100px; font-weight: 700; font-size: 18px; text-decoration: none;">
-            [[ICON_PHONE]] +992 055 07 77 77
-          </a>
+        <style>
+          .beautiful-input { background: rgba(255, 255, 255, 0.6); border: 1px solid var(--gold); transition: all 0.3s ease; text-align: left; backdrop-filter: blur(4px); }
+          .beautiful-input:focus { background: white; box-shadow: 0 4px 15px rgba(212, 175, 55, 0.2); outline: none; }
+          .minimal-btn { transition: all 0.3s ease; }
+          .minimal-btn:hover { transform: translateY(-2px); filter: brightness(0.95); box-shadow: 0 8px 24px rgba(212, 175, 55, 0.3); }
+          .minimal-btn:active { transform: translateY(0); }
+          @media (max-width: 768px) {
+            .service-request-form {
+              grid-template-columns: 1fr !important;
+              padding: 32px 24px !important;
+              gap: 16px !important;
+            }
+          }
+        </style>
+        <div style="background: var(--ink); padding: 80px 40px; border-radius: 24px; display: flex; flex-direction: column; align-items: center; width: 100%;">
+          <div style="text-align: center; max-width: 600px; margin: 0 auto 40px auto; display: flex; flex-direction: column; align-items: center;">
+            <h3 style="font-size: 32px; font-weight: 400; margin-bottom: 12px; color: white; text-align: center;">Оставить заявку</h3>
+            <p style="font-size: 16px; color: rgba(255,255,255,0.6); font-weight: 300; text-align: center; margin: 0;">Оставьте заявку, чтобы узнать все подробности акции и начать подбор вашей идеальной квартиры.</p>
+          </div>
+          
+          <div style="width: 100%; max-width: 600px;">
+            <div class="service-request-success" style="display: none; background: linear-gradient(145deg, #ffffff 0%, #f0f4f8 100%); border: 1px solid var(--gold); border-radius: 20px; padding: 48px 32px; text-align: center; color: var(--ink); box-shadow: 0 20px 50px rgba(0,0,0,0.3); animation: fadeUp 0.6s ease-out forwards;">
+              <div style="display: inline-flex; align-items: center; justify-content: center; width: 88px; height: 88px; border-radius: 50%; background: rgba(34, 197, 94, 0.1); margin-bottom: 24px;">
+                <div style="display: inline-flex; align-items: center; justify-content: center; width: 64px; height: 64px; border-radius: 50%; background: linear-gradient(135deg, #22c55e 0%, #15803d 100%); color: white; box-shadow: 0 10px 25px rgba(22, 163, 74, 0.4);">
+                  <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6L9 17l-5-5"></path></svg>
+                </div>
+              </div>
+              <h3 style="font-size: 22px; font-weight: 500; margin-bottom: 8px;">Спасибо за заявку</h3>
+              <p style="font-size: 16px; color: var(--muted);">Мы ответим вам как можно быстрее.</p>
+            </div>
+            
+            <form class="service-request-form" data-service="Шпаклевка бесплатно" style="background: linear-gradient(135deg, #ffffff 0%, #f1f5f9 100%); border: 1px solid var(--gold); border-radius: 20px; padding: 48px; color: var(--ink); display: grid; grid-template-columns: 1fr 1fr; gap: 24px; box-shadow: 0 20px 50px rgba(0,0,0,0.3);">
+              <label style="display: block;">
+                <span style="display: block; margin-bottom: 8px; font-weight: 500; font-size: 14px; color: var(--ink);">Ваше имя</span>
+                <input type="text" name="name" class="beautiful-input" required placeholder="Введите имя" style="width: 100%; padding: 16px 20px; border-radius: 12px; color: var(--ink); font-size: 15px;" />
+              </label>
+              <label style="display: block;">
+                <span style="display: block; margin-bottom: 8px; font-weight: 500; font-size: 14px; color: var(--ink);">Ваш телефон</span>
+                <input type="tel" name="phone" class="phone-input beautiful-input" required placeholder="+992 000 00 0000" style="width: 100%; padding: 16px 20px; border-radius: 12px; color: var(--ink); font-size: 15px;" />
+              </label>
+              <label style="display: block; grid-column: 1 / -1;">
+                <span style="display: block; margin-bottom: 8px; font-weight: 500; font-size: 14px; color: var(--ink);">Комментарий</span>
+                <textarea name="message" class="beautiful-input" required placeholder="Детали заявки..." style="width: 100%; padding: 16px 20px; border-radius: 12px; color: var(--ink); font-size: 15px; min-height: 120px; resize: none;"></textarea>
+              </label>
+              <div style="text-align: center; grid-column: 1 / -1; margin-top: 8px;">
+                <button type="submit" class="minimal-btn" style="padding: 18px 48px; border: none; border-radius: 12px; background: var(--gold); color: var(--ink); font-weight: 600; cursor: pointer; font-size: 16px; width: 100%;">Отправить заявку</button>
+              </div>
+            </form>
+          </div>
         </div>
       </div>
     </section>
@@ -700,9 +764,13 @@ export const auraPages = {
     </div>
 
     <!-- GALLERY -->
-    <div class="detail-gallery">
-      <div class="gallery-main"></div>
-      <div class="gallery-thumbs"></div>
+    <div class="detail-gallery-wrapper">
+      <button class="gallery-arrow prev" onclick="document.querySelector('.detail-gallery').scrollBy({left: -300, behavior: 'smooth'})">‹</button>
+      <div class="detail-gallery">
+        <div class="gallery-main"></div>
+        <div class="gallery-thumbs"></div>
+      </div>
+      <button class="gallery-arrow next" onclick="document.querySelector('.detail-gallery').scrollBy({left: 300, behavior: 'smooth'})">›</button>
     </div>
 
     <!-- DETAIL BODY -->
@@ -794,7 +862,7 @@ export const auraPages = {
             <div class="ca-ava">АА</div>
             <div class="ca-info">
               <strong>Алиджон Ахмедов</strong>
-              <small>[[ICON_STAR]] 4.9 · 47 сделок</small>
+              <small>47 сделок</small>
             </div>
             <svg style="margin-left:auto;opacity:.3" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18l6-6-6-6"/></svg>
           </div>
@@ -831,7 +899,7 @@ export const auraPages = {
           <h1>Алиджон Ахмедов</h1>
           <p>Риэлтор · Barakat Estate · Работает с 2019 года</p>
           <div class="agent-badges">
-            <span class="agent-badge">[[ICON_STAR]] 4.9</span>
+            <!-- Star removed -->
             <span class="agent-badge">47 сделок</span>
             <span class="agent-badge">[[ICON_CHECK]] Проверен</span>
             <span class="agent-badge">Центр · И. Сомони</span>
@@ -856,7 +924,7 @@ export const auraPages = {
           <div class="stat-label">Активных объявлений</div>
         </div>
         <div class="stat-item">
-          <div class="stat-num">4.9<span>[[ICON_STAR]]</span></div>
+          <div class="stat-num"><span></span></div>
           <div class="stat-label">Средняя оценка</div>
         </div>
         <div class="stat-item">
@@ -994,6 +1062,38 @@ export const auraPages = {
         <button class="btn-primary" onclick="navigate('listings')" style="font-size: 16px; padding: 16px 36px; border: none; cursor: pointer; border-radius: 100px; background: var(--gold); color: var(--ink); font-weight: 600;">Смотреть объявления</button>
       </div>
     </section>
+  </div>
+</div>`,
+  error404: `<div class="page active" id="page-404">
+  <div class="error-page-container">
+    <div class="error-content">
+      <div class="error-icon">
+        <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path><circle cx="12" cy="10" r="3"></circle><line x1="2" y1="2" x2="22" y2="22"></line></svg>
+      </div>
+      <h1 class="error-code">404</h1>
+      <h2 class="error-title">Страница не найдена</h2>
+      <p class="error-message">Возможно, этот адрес уже продан или был указан с ошибкой. Давайте вернёмся на главную и продолжим поиск.</p>
+      <button class="btn-primary error-btn" onclick="navigate('home')">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+        На главную
+      </button>
+    </div>
+  </div>
+</div>`,
+  error500: `<div class="page active" id="page-500">
+  <div class="error-page-container">
+    <div class="error-content">
+      <div class="error-icon">
+        <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"></path></svg>
+      </div>
+      <h1 class="error-code">500</h1>
+      <h2 class="error-title">Техническая неполадка</h2>
+      <p class="error-message">Мы уже чиним крышу нашего сервера. Скоро всё снова заработает как надо.</p>
+      <button class="btn-primary error-btn" onclick="window.location.reload()">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12a9 9 0 1 1-9-9c2.52 0 4.93 1 6.74 2.74L21 8"/><path d="M21 3v5h-5"/></svg>
+        Обновить страницу
+      </button>
+    </div>
   </div>
 </div>`
 } as const;

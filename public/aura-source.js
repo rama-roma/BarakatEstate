@@ -54,7 +54,7 @@ function formatAdminPrice(item) {
   }
   const amount = rawPrice.toLocaleString('ru-RU').replace(/\u00a0/g, ' ');
   const suffix = item.monthlyPrice ? ' /мес' : '';
-  return `${amount} смн${suffix}`;
+  return `${amount} с${suffix}`;
 }
 
 function mapAdminListing(entry) {
@@ -327,18 +327,22 @@ function propCard(p, onclick) {
         <div class="prop-price-note">${p.priceNote}${p.propertyType ? ` &middot; ${p.propertyType}` : ''}</div>
       </div>
       <div class="prop-addr">${lucideIcon('mapPin')} ${p.addr} ${p.landmark ? `<span style="opacity: 0.7; font-size: 0.9em;">(Ор: ${p.landmark})</span>` : ''}</div>
-      <div class="prop-meta" style="flex-wrap: wrap; height: auto; overflow: visible; white-space: normal;">
-        <span>${lucideIcon('bed')} <strong>${p.rooms}</strong> комн</span>
-        <span>${lucideIcon('ruler')} <strong>${p.area}</strong> м²</span>
-        <span>${lucideIcon('building2')} <strong>${p.floor}</strong> эт</span>
-        ${p.renovation && p.renovation !== 'Любая' ? `<span>${lucideIcon('sparkles')} ${p.renovation}</span>` : ''}
-        ${p.constructionStage && p.constructionStage !== 'Любая' ? `<span>${lucideIcon('construction')} ${p.constructionStage}</span>` : ''}
+      <div class="prop-meta" style="flex-direction: column; gap: 10px; height: auto; overflow: visible; white-space: normal; align-items: flex-start;">
+        <div style="display: flex; gap: 18px; flex-wrap: wrap; width: 100%;">
+          <span>${lucideIcon('bed')} <strong>${p.rooms}</strong> комн</span>
+          <span>${lucideIcon('ruler')} <strong>${p.area}</strong> м²</span>
+          <span>${lucideIcon('building2')} <strong>${p.floor}</strong> эт</span>
+        </div>
+        ${(p.renovation && p.renovation !== 'Любая') || (p.constructionStage && p.constructionStage !== 'Любая') ? `
+        <div style="display: flex; gap: 18px; flex-wrap: wrap; width: 100%;">
+          ${p.renovation && p.renovation !== 'Любая' ? `<span>${lucideIcon('sparkles')} ${p.renovation}</span>` : ''}
+          ${p.constructionStage && p.constructionStage !== 'Любая' ? `<span>${lucideIcon('construction')} ${p.constructionStage}</span>` : ''}
+        </div>` : ''}
       </div>
       <div class="prop-agent">
         <div class="agent-ava">${p.agentAvatar ? `<img src="${p.agentAvatar}" alt="${p.agentName}" />` : p.agent}</div>
         <div>
           <strong onclick="event.stopPropagation();navigate('profile','${p.sellerId || ''}')">${p.agentName}</strong>
-          <small> · ${lucideIcon('star', 'lucide-inline lucide-star')} ${p.rating}</small>
         </div>
       </div>
     </div>
@@ -616,9 +620,80 @@ async function hydrateAuraPage(page) {
   if (page === 'property') renderPropertyDetail();
   if (page === 'favorites') renderFavoritesPage();
   if (page === 'agent') renderCards('agent-grid', 6);
-  if (page === 'services') setupServiceRequestForm();
+  setupServiceRequestForm();
   await initYandexMaps();
   initCardSliders();
+}
+
+function setupServiceRequestForm() {
+  // Setup phone formatting
+  const phoneInputs = document.querySelectorAll('.phone-input');
+  phoneInputs.forEach(input => {
+    input.addEventListener('input', (e) => {
+      let numbers = e.target.value.replace(/\D/g, "");
+      if (numbers.startsWith("992")) numbers = numbers.slice(3);
+      let formatted = "+992";
+      if (numbers.length > 0) formatted += " " + numbers.substring(0, 3);
+      if (numbers.length > 3) formatted += " " + numbers.substring(3, 5);
+      if (numbers.length > 5) formatted += " " + numbers.substring(5, 9);
+      e.target.value = formatted;
+    });
+  });
+
+  const forms = document.querySelectorAll('.service-request-form');
+  forms.forEach(form => {
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      
+      const phoneInput = form.querySelector('input[name="phone"]');
+      if (phoneInput && phoneInput.value.replace(/\D/g, "").length < 12) {
+        alert('Пожалуйста, введите корректный номер телефона.');
+        return;
+      }
+      
+      const btn = form.querySelector('button[type="submit"]');
+      const originalText = btn.textContent;
+      const serviceType = form.dataset.service || 'Общая заявка';
+      const container = form.closest('.service-request-container');
+      const successBlock = container?.querySelector('.service-request-success');
+      
+      try {
+        btn.textContent = 'Отправка...';
+        btn.disabled = true;
+        btn.style.opacity = '0.7';
+        
+        const formData = new FormData(form);
+        const data = {
+          name: formData.get('name'),
+          phone: formData.get('phone'),
+          message: formData.get('message'),
+          service: serviceType
+        };
+        
+        const res = await fetch('/api/service-request', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(data)
+        });
+        
+        if (!res.ok) throw new Error('Ошибка сервера');
+        
+        form.reset();
+        if (container && successBlock) {
+          form.style.display = 'none';
+          successBlock.style.display = 'block';
+        } else {
+          alert('Заявка успешно отправлена!');
+        }
+      } catch (err) {
+        console.error(err);
+        alert('Ошибка при отправке. Попробуйте позже.');
+        btn.textContent = originalText;
+        btn.disabled = false;
+        btn.style.opacity = '1';
+      }
+    });
+  });
 }
 
 function renderCatalogState() {
@@ -1089,7 +1164,7 @@ function renderPropertyDetail() {
   }
   if (contactName) contactName.textContent = property.agentName;
   if (contactMeta) {
-    contactMeta.innerHTML = `${lucideIcon('star', 'lucide-inline lucide-star')} ${property.rating || 5} · ${property.deals || 0} сделок`;
+    contactMeta.innerHTML = '';
   }
   
   const contactPhoneDisplay = document.getElementById('contact-phone-display');
