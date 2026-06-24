@@ -40,5 +40,26 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: "Service unavailable" }, { status: 500 });
   }
 
+  // Send to Telegram
+  const telegramBotToken = process.env.TELEGRAM_BOT_TOKEN;
+  const telegramChatId = process.env.TELEGRAM_CHAT_ID;
+
+  if (telegramBotToken && telegramChatId) {
+    const text = `🌟 *Новая заявка с сайта!* 🌟\n\n👤 *Имя:* ${name}\n📞 *Телефон:* ${phone}\n🛠 *Услуга:* ${service}\n💬 *Сообщение:* ${message || "Нет сообщения"}`;
+    try {
+      await fetch(`https://api.telegram.org/bot${telegramBotToken}/sendMessage`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          chat_id: telegramChatId,
+          text: text,
+          parse_mode: "Markdown",
+        }),
+      });
+    } catch (e) {
+      console.error("Failed to send telegram message:", e);
+    }
+  }
+
   return NextResponse.json({ ok: true });
 }
