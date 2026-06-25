@@ -10,6 +10,9 @@ import Script from "next/script";
 export const metadata: Metadata = {
   title: "Barakat Estate — недвижимость в Душанбе",
   description: "Бета-версия сайта Barakat Estate для продажи и аренды недвижимости в Душанбе",
+  icons: {
+    icon: "/barakat.PNG",
+  },
 };
 
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
@@ -22,6 +25,7 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
           href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;1,9..40,300&display=swap"
           rel="stylesheet"
         />
+        <link rel="icon" href="/barakat.PNG" type="image/png" sizes="any" />
       </head>
       <body>
         <AuraRuntime />

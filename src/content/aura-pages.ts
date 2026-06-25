@@ -297,42 +297,75 @@ export const auraPages = {
         <h2 class="section-title" style="color:white">Наши <strong>услуги</strong></h2>
         <p class="section-sub" style="color:rgba(255,255,255,.55)">Полный спектр услуг в сфере недвижимости</p>
       </div>
+      <style>
+        .service-card button, .service-card a { display: none !important; }
+        .test-gold-btn {
+          padding: 8px 20px; font-size: 13px; font-weight: 600; border-radius: 100px; width: fit-content; 
+          background: var(--gold-pale); color: var(--gold-dark); border: 1.5px solid var(--gold); 
+          cursor: pointer; transition: all 0.2s; display: inline-block; text-align: center;
+        }
+        .test-gold-btn:hover { background: var(--gold); color: var(--ink); }
+      </style>
       <div class="services-grid">
-        <div class="service-card">
-          <div class="service-icon">[[ICON_HOME]]</div>
-          <h3>Срочный выкуп</h3>
-          <p>Быстрая оценка объекта и сопровождение продажи без лишних ожиданий</p>
-          <div class="service-price">По оценке объекта</div>
+        <div class="service-card" style="position: relative; overflow: hidden; display: flex; flex-direction: column;" onclick="window.location.href='/buy-property'">
+          <div style="position: absolute; inset: 0; background-image: url('https://images.unsplash.com/photo-1560518883-ce09059eeffa?auto=format&fit=crop&w=800&q=80'); background-size: cover; background-position: center; opacity: 0.15; z-index: 0; transition: opacity 0.3s;" onmouseover="this.style.opacity='0.3'" onmouseout="this.style.opacity='0.15'"></div>
+          <div style="position: relative; z-index: 1; flex: 1; display: flex; flex-direction: column;">
+            <div class="service-icon">[[ICON_HOME]]</div>
+            <h3>Срочный выкуп</h3>
+            <p style="flex: 1;">Быстрая оценка объекта и сопровождение продажи без лишних ожиданий</p>
+            <div class="service-price" style="margin-bottom: 16px;">По оценке объекта</div>
+            <div class="test-gold-btn" onclick="event.stopPropagation(); window.location.href='/buy-property'">Подробнее</div>
+          </div>
         </div>
-        <div class="service-card">
-          <div class="service-icon">[[ICON_MONEY]]</div>
-          <h3>Ремонт под ключ</h3>
-          <p>Смета, подрядчики, контроль этапов и подготовка объекта к заселению</p>
-          <div class="service-price">По запросу</div>
+        <div class="service-card" style="position: relative; overflow: hidden; display: flex; flex-direction: column;" onclick="window.location.href='/repair'">
+          <div style="position: absolute; inset: 0; background-image: url('https://images.unsplash.com/photo-1581094794329-c8112a89af12?auto=format&fit=crop&w=800&q=80'); background-size: cover; background-position: center; opacity: 0.15; z-index: 0; transition: opacity 0.3s;" onmouseover="this.style.opacity='0.3'" onmouseout="this.style.opacity='0.15'"></div>
+          <div style="position: relative; z-index: 1; flex: 1; display: flex; flex-direction: column;">
+            <div class="service-icon">[[ICON_CONSTRUCTION]]</div>
+            <h3>Ремонт под ключ</h3>
+            <p style="flex: 1;">Смета, подрядчики, контроль этапов и подготовка объекта к заселению</p>
+            <div class="service-price" style="margin-bottom: 16px;">По запросу</div>
+            <div class="test-gold-btn" onclick="event.stopPropagation(); window.location.href='/repair'">Подробнее</div>
+          </div>
         </div>
-        <div class="service-card">
-          <div class="service-icon">[[ICON_CLIPBOARD]]</div>
-          <h3>Дизайнерские услуги</h3>
-          <p>Планировка, подбор материалов и визуальная концепция интерьера</p>
-          <div class="service-price">По запросу</div>
+        <div class="service-card" style="position: relative; overflow: hidden; display: flex; flex-direction: column;" onclick="window.location.href='/design'">
+          <div style="position: absolute; inset: 0; background-image: url('https://images.unsplash.com/photo-1618221195710-dd6b41faaea6?auto=format&fit=crop&w=800&q=80'); background-size: cover; background-position: center; opacity: 0.15; z-index: 0; transition: opacity 0.3s;" onmouseover="this.style.opacity='0.3'" onmouseout="this.style.opacity='0.15'"></div>
+          <div style="position: relative; z-index: 1; flex: 1; display: flex; flex-direction: column;">
+            <div class="service-icon">[[ICON_CAMERA]]</div>
+            <h3>Дизайнерские услуги</h3>
+            <p style="flex: 1;">Планировка, подбор материалов и визуальная концепция интерьера</p>
+            <div class="service-price" style="margin-bottom: 16px;">По запросу</div>
+            <div class="test-gold-btn" onclick="event.stopPropagation(); window.location.href='/design'">Подробнее</div>
+          </div>
         </div>
-        <div class="service-card">
-          <div class="service-icon">[[ICON_SEARCH]]</div>
-          <h3>Оформление документов</h3>
-          <p>Подготовка и проверка документов для сделки с недвижимостью</p>
-          <div class="service-price">По запросу</div>
+        <div class="service-card" style="position: relative; overflow: hidden; display: flex; flex-direction: column;" onclick="window.location.href='/document-registration'">
+          <div style="position: absolute; inset: 0; background-image: url('https://images.unsplash.com/photo-1450101499163-c8848c66ca85?auto=format&fit=crop&w=800&q=80'); background-size: cover; background-position: center; opacity: 0.15; z-index: 0; transition: opacity 0.3s;" onmouseover="this.style.opacity='0.3'" onmouseout="this.style.opacity='0.15'"></div>
+          <div style="position: relative; z-index: 1; flex: 1; display: flex; flex-direction: column;">
+            <div class="service-icon">[[ICON_CLIPBOARD]]</div>
+            <h3>Оформление документов</h3>
+            <p style="flex: 1;">Подготовка и проверка документов для сделки с недвижимостью</p>
+            <div class="service-price" style="margin-bottom: 16px;">По запросу</div>
+            <div class="test-gold-btn" onclick="event.stopPropagation(); window.location.href='/document-registration'">Подробнее</div>
+          </div>
         </div>
-        <div class="service-card">
-          <div class="service-icon">[[ICON_SPARKLES]]</div>
-          <h3>Шпаклевка бесплатно</h3>
-          <p>При покупке жилья — шпаклевка стен в подарок!</p>
-          <div class="service-price">Бесплатно</div>
+        <div class="service-card" style="position: relative; overflow: hidden; display: flex; flex-direction: column;" onclick="window.location.href='/putty'">
+          <div style="position: absolute; inset: 0; background-image: url('https://images.unsplash.com/photo-1589939705384-5185137a7f0f?auto=format&fit=crop&w=800&q=80'); background-size: cover; background-position: center; opacity: 0.15; z-index: 0; transition: opacity 0.3s;" onmouseover="this.style.opacity='0.3'" onmouseout="this.style.opacity='0.15'"></div>
+          <div style="position: relative; z-index: 1; flex: 1; display: flex; flex-direction: column;">
+            <div class="service-icon">[[ICON_SPARKLES]]</div>
+            <h3>Шпаклевка бесплатно</h3>
+            <p style="flex: 1;">При покупке жилья — шпаклевка стен в подарок!</p>
+            <div class="service-price" style="margin-bottom: 16px;">Бесплатно</div>
+            <div class="test-gold-btn" onclick="event.stopPropagation(); window.location.href='/putty'">Подробнее</div>
+          </div>
         </div>
-        <div class="service-card">
-          <div class="service-icon">[[ICON_STAR]]</div>
-          <h3>Клининг</h3>
-          <p>Уборка перед показом, после ремонта или перед заселением</p>
-          <div class="service-price">По объему работ</div>
+        <div class="service-card" style="position: relative; overflow: hidden; display: flex; flex-direction: column;" onclick="window.location.href='/cleaning'">
+          <div style="position: absolute; inset: 0; background-image: url('https://images.unsplash.com/photo-1581578731548-c64695cc6952?auto=format&fit=crop&w=800&q=80'); background-size: cover; background-position: center; opacity: 0.15; z-index: 0; transition: opacity 0.3s;" onmouseover="this.style.opacity='0.3'" onmouseout="this.style.opacity='0.15'"></div>
+          <div style="position: relative; z-index: 1; flex: 1; display: flex; flex-direction: column;">
+            <div class="service-icon">[[ICON_STAR]]</div>
+            <h3>Клининг</h3>
+            <p style="flex: 1;">Уборка перед показом, после ремонта или перед заселением</p>
+            <div class="service-price" style="margin-bottom: 16px;">По объему работ</div>
+            <div class="test-gold-btn" onclick="event.stopPropagation(); window.location.href='/cleaning'">Подробнее</div>
+          </div>
         </div>
       </div>
     </div>
@@ -554,64 +587,64 @@ export const auraPages = {
     <section class="services-section services-catalog-section">
       <div class="container">
         <div class="services-grid services-grid-featured">
-          <article class="service-card service-card-action service-theme-repair">
+          <article class="service-card service-card-action service-theme-repair" style="cursor: pointer;" onclick="window.location.href='/putty'">
             <div class="service-card-media"><img src="https://images.unsplash.com/photo-1589939705384-5185137a7f0f?auto=format&fit=crop&w=800&q=80" alt="Шпаклевка совершенно бесплатно!" loading="lazy" /></div>
             <div class="service-card-body">
               <div class="service-icon">[[ICON_SPARKLES]]</div>
               <h3>Шпаклевка бесплатно</h3>
               <p>При покупке жилья через ЧДММ «Баракат Хизматрасон» — шпаклевка в подарок!</p>
               <div class="service-price">Бесплатно</div>
-              <a class="service-request-btn" href="/putty">Подробнее</a>
+              <a class="service-request-btn" href="/putty" onclick="event.stopPropagation()">Подробнее</a>
             </div>
           </article>
-          <article class="service-card service-card-action service-theme-buyout">
-            <div class="service-card-media"><img src="/services/buy-property.png" alt="Срочный выкуп" loading="lazy" /></div>
+          <article class="service-card service-card-action service-theme-buyout" style="cursor: pointer;" onclick="window.location.href='/buy-property'">
+            <div class="service-card-media"><img src="https://images.unsplash.com/photo-1560518883-ce09059eeffa?auto=format&fit=crop&w=800&q=80" alt="Срочный выкуп" loading="lazy" /></div>
             <div class="service-card-body">
               <div class="service-icon">[[ICON_MONEY]]</div>
               <h3>Срочный выкуп</h3>
               <p>Оценка объекта, проверка документов и быстрый выход на сделку.</p>
               <div class="service-price">По оценке объекта</div>
-              <a class="service-request-btn" href="/buy-property">Подробнее</a>
+              <a class="service-request-btn" href="/buy-property" onclick="event.stopPropagation()">Подробнее</a>
             </div>
           </article>
-          <article class="service-card service-card-action service-theme-repair">
-            <div class="service-card-media"><img src="/services/repair.png" alt="Ремонт под ключ" loading="lazy" /></div>
+          <article class="service-card service-card-action service-theme-repair" style="cursor: pointer;" onclick="window.location.href='/repair'">
+            <div class="service-card-media"><img src="https://images.unsplash.com/photo-1581094794329-c8112a89af12?auto=format&fit=crop&w=800&q=80" alt="Ремонт под ключ" loading="lazy" /></div>
             <div class="service-card-body">
               <div class="service-icon">[[ICON_CONSTRUCTION]]</div>
               <h3>Ремонт под ключ</h3>
               <p>Смета, материалы, подрядчики и контроль результата.</p>
               <div class="service-price">По запросу</div>
-              <a class="service-request-btn" href="/repair">Подробнее</a>
+              <a class="service-request-btn" href="/repair" onclick="event.stopPropagation()">Подробнее</a>
             </div>
           </article>
-          <article class="service-card service-card-action service-theme-design">
-            <div class="service-card-media"><img src="/services/design.png" alt="Дизайн интерьера" loading="lazy" /></div>
+          <article class="service-card service-card-action service-theme-design" style="cursor: pointer;" onclick="window.location.href='/design'">
+            <div class="service-card-media"><img src="https://images.unsplash.com/photo-1618221195710-dd6b41faaea6?auto=format&fit=crop&w=800&q=80" alt="Дизайн интерьера" loading="lazy" /></div>
             <div class="service-card-body">
               <div class="service-icon">[[ICON_HOME]]</div>
               <h3>Дизайн интерьера</h3>
               <p>Планировка, визуализация и стильная упаковка объекта.</p>
               <div class="service-price">По запросу</div>
-              <a class="service-request-btn" href="/design">Подробнее</a>
+              <a class="service-request-btn" href="/design" onclick="event.stopPropagation()">Подробнее</a>
             </div>
           </article>
-          <article class="service-card service-card-action service-theme-cleaning">
-            <div class="service-card-media"><img src="/services/cleaning.png" alt="Клининг" loading="lazy" /></div>
+          <article class="service-card service-card-action service-theme-cleaning" style="cursor: pointer;" onclick="window.location.href='/cleaning'">
+            <div class="service-card-media"><img src="https://images.unsplash.com/photo-1581578731548-c64695cc6952?auto=format&fit=crop&w=800&q=80" alt="Клининг" loading="lazy" /></div>
             <div class="service-card-body">
               <div class="service-icon">[[ICON_SPARKLES]]</div>
               <h3>Клининг</h3>
               <p>Уборка перед показом, после ремонта или перед заселением.</p>
               <div class="service-price">По объему работ</div>
-              <a class="service-request-btn" href="/cleaning">Подробнее</a>
+              <a class="service-request-btn" href="/cleaning" onclick="event.stopPropagation()">Подробнее</a>
             </div>
           </article>
-          <article class="service-card service-card-action service-theme-documents">
-            <div class="service-card-media"><img src="/services/documents.png" alt="Оформление документов" loading="lazy" /></div>
+          <article class="service-card service-card-action service-theme-documents" style="cursor: pointer;" onclick="window.location.href='/document-registration'">
+            <div class="service-card-media"><img src="https://images.unsplash.com/photo-1450101499163-c8848c66ca85?auto=format&fit=crop&w=800&q=80" alt="Оформление документов" loading="lazy" /></div>
             <div class="service-card-body">
               <div class="service-icon">[[ICON_CLIPBOARD]]</div>
               <h3>Документы</h3>
               <p>Проверка, консультация и сопровождение оформления сделки.</p>
               <div class="service-price">По запросу</div>
-              <a class="service-request-btn" href="/document-registration">Подробнее</a>
+              <a class="service-request-btn" href="/document-registration" onclick="event.stopPropagation()">Подробнее</a>
             </div>
           </article>
         </div>
