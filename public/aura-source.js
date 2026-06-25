@@ -4,6 +4,71 @@ const properties = [];
 
 let adminProperties = [];
 
+window.AuraSettings = {
+  districts: [],
+  propertyTypes: [],
+  dealTypes: []
+};
+
+async function loadGlobalSettings() {
+  const baseUrl = window.BARAKAT_API_URL || 'http://localhost:3001';
+  try {
+    const res = await fetch(`${baseUrl}/api/profile`, { cache: 'no-store' });
+    if (!res.ok) return;
+    const { data } = await res.json();
+    if (data) {
+      if (data.districts) window.AuraSettings.districts = data.districts.split(',').map(s => s.trim()).filter(Boolean);
+      if (data.propertyTypes) window.AuraSettings.propertyTypes = data.propertyTypes.split(',').map(s => s.trim()).filter(Boolean);
+      if (data.dealTypes) window.AuraSettings.dealTypes = data.dealTypes.split(',').map(s => s.trim()).filter(Boolean);
+    }
+  } catch (err) {
+    console.error('Failed to load global settings', err);
+  }
+}
+
+function populateSelects() {
+  const { propertyTypes, districts, dealTypes } = window.AuraSettings;
+
+  // Update Select Dropdowns
+  document.querySelectorAll('select.s-select').forEach(select => {
+    const firstOption = select.querySelector('option');
+    if (!firstOption) return;
+    
+    const text = firstOption.textContent.trim();
+    if ((text === 'Тип недвижимости' || text === 'Все типы') && propertyTypes.length > 0) {
+      select.innerHTML = `<option>${text}</option>` + propertyTypes.map(t => `<option value="${t}">${t}</option>`).join('');
+    } else if ((text === 'Город' || text === 'Все районы') && districts.length > 0) {
+      select.innerHTML = `<option>${text}</option>` + districts.map(t => `<option value="${t}">${t}</option>`).join('');
+    }
+  });
+
+  // Update Checkbox Groups
+  document.querySelectorAll('.filter-group').forEach(group => {
+    const h4 = group.querySelector('h4');
+    if (!h4) return;
+    const title = h4.textContent.trim();
+    
+    let itemsToRender = [];
+    if (title === 'Тип недвижимости' && propertyTypes.length > 0) itemsToRender = propertyTypes;
+    if (title === 'Район' && districts.length > 0) itemsToRender = districts;
+    if (title === 'Тип сделки' && dealTypes.length > 0) itemsToRender = dealTypes;
+
+    if (itemsToRender.length > 0) {
+      const newHTML = `<h4>${title}</h4>` + itemsToRender.map(item => {
+        let val = item, label = item;
+        if (title === 'Тип сделки' && item.includes(':')) {
+          const parts = item.split(':');
+          val = parts[0].trim();
+          label = parts[1] ? parts[1].trim() : val;
+        }
+        return `<label class="filter-check"><input type="checkbox" value="${val}" /><label>${label}</label></label>`;
+      }).join('');
+      
+      group.innerHTML = newHTML;
+    }
+  });
+}
+
 function mediaUrl(media) {
   if (!media) return '';
   if (typeof media === 'string') {
@@ -184,7 +249,8 @@ function splitFeatures(value) {
 }
 
 function districtFromAddress(address) {
-  const districts = ['Центр', 'И. Сомони', 'Сино', 'Фирдавси', 'Шохмансур', 'Сарахиёт'];
+  let districts = ['Центр', 'И. Сомони', 'Сино', 'Фирдавси', 'Шохмансур', 'Сарахиёт'];
+  if (window.AuraSettings?.districts?.length) districts = window.AuraSettings.districts;
   return districts.find((district) => String(address || '').includes(district)) || '';
 }
 
@@ -601,6 +667,8 @@ function setupHomeServices() {
 }
 
 async function hydrateAuraPage(page) {
+  await loadGlobalSettings();
+  populateSelects();
   await loadAdminProperties();
   renderCatalogState();
 
