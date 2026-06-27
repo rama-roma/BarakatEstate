@@ -549,6 +549,12 @@ export const auraPages = {
           <label class="filter-check"><input type="checkbox" /><label>Охрана</label></label>
         </div>
 
+        <div class="filter-group">
+          <h4>Документ</h4>
+          <label class="filter-check"><input type="checkbox" /><label>Договор</label></label>
+          <label class="filter-check"><input type="checkbox" /><label>Техпаспорт</label></label>
+        </div>
+
         <button class="btn-primary" style="width:100%;justify-content:center">Применить</button>
       </div>
 
@@ -1005,7 +1011,7 @@ export const auraPages = {
 </div>`,
   about: `<div class="page active" id="page-about">
   <div class="services-page-shell">
-    <section class="services-hero-panel" style="background-image: linear-gradient(135deg, rgba(30, 45, 74, 0.85) 0%, rgba(212, 175, 55, 0.6) 100%), url('https://images.unsplash.com/photo-1497366216548-37526070297c?auto=format&fit=crop&w=1600&q=80'); background-size: cover; background-position: center center; color: white; position: relative; min-height: 50vh; display: flex; align-items: center; justify-content: center; padding-top: 80px;">
+    <section class="services-hero-panel" style="background-image: linear-gradient(135deg, rgba(30, 45, 74, 0.85) 0%, rgba(212, 175, 55, 0.6) 100%), url('https://images.unsplash.com/photo-1564013799919-ab600027ffc6?auto=format&fit=crop&w=1600&q=80'); background-size: cover; background-position: center center; color: white; position: relative; min-height: 50vh; display: flex; align-items: center; justify-content: center; padding-top: 80px;">
       <div class="container" style="position: relative; z-index: 2; display: flex; flex-direction: column; align-items: center;">
         <div class="section-eyebrow" style="color: rgba(255,255,255,0.85); border-color: rgba(255,255,255,0.3); background: rgba(255,255,255,0.1); backdrop-filter: blur(4px);">О компании</div>
         <h1 class="section-title" style="color: white; text-shadow: 0 4px 16px rgba(0,0,0,0.4);">Barakat <strong>Estate</strong></h1>
@@ -1025,7 +1031,7 @@ export const auraPages = {
           </p>
         </div>
         <div style="position: relative; padding-bottom: 20px;">
-          <img src="https://images.unsplash.com/photo-1560518883-ce09059eeffa?auto=format&fit=crop&w=800&q=80" alt="Офис Barakat Estate" style="width: 100%; border-radius: 24px; box-shadow: 0 20px 40px rgba(0,0,0,0.1);" />
+          <img src="/br.jpg" alt="Офис Barakat Estate" style="width: 100%; border-radius: 24px; box-shadow: 0 20px 40px rgba(0,0,0,0.1);" />
           <div class="about-float-card" style="position: absolute; bottom: 0px; left: -15px; background: white; padding: 20px; border-radius: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.08); display: flex; align-items: center; gap: 16px; max-width: 90%;">
             <div style="width: 50px; height: 50px; background: var(--gold-pale); border-radius: 50%; display: flex; align-items: center; justify-content: center; color: var(--gold-dark); flex-shrink: 0;">[[ICON_SHIELD]]</div>
             <div>
@@ -1156,7 +1162,7 @@ export const auraPages = {
 </div>`,
   team: `<div class="page active" id="page-team">
   <div class="header-padding"></div>
-  <section class="listings-hero" style="background-image: linear-gradient(135deg, rgba(30, 45, 74, 0.8) 0%, rgba(212, 175, 55, 0.5) 100%), url('https://images.unsplash.com/photo-1560518883-ce09059eeffa?ixlib=rb-4.0.3&auto=format&fit=crop&w=1920&q=80'); background-size: cover; background-position: center; color: white; padding-top: 100px; padding-bottom: 70px; text-align: center; position: relative;">
+  <section class="listings-hero" style="background-image: linear-gradient(135deg, rgba(30, 45, 74, 0.8) 0%, rgba(212, 175, 55, 0.5) 100%), url('https://images.unsplash.com/photo-1600880292203-757bb62b4baf?auto=format&fit=crop&w=1600&q=80'); background-size: cover; background-position: center 20%; color: white; padding-top: 130px !important; padding-bottom: 70px; text-align: center; position: relative;">
     <div class="container" style="display: flex; flex-direction: column; align-items: center; justify-content: center; position: relative; z-index: 2;">
       <div style="width: 64px; height: 64px; background: rgba(255,255,255,0.15); backdrop-filter: blur(12px); border-radius: 50%; display: flex; align-items: center; justify-content: center; margin-bottom: 20px; box-shadow: 0 8px 32px rgba(0,0,0,0.2); border: 1px solid rgba(255,255,255,0.3); color: white;">
         <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>

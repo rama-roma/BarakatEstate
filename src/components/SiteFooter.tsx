@@ -82,22 +82,21 @@ export default async function SiteFooter() {
               <Image src={profile?.logoUrl || "/barakat.PNG"} alt={profile?.name || "Barakat Estate"} width={100} height={78} priority />
             </div>
             <p>{desc}</p>
+            <p style={{ marginTop: '8px', fontSize: '14px', color: 'var(--muted)' }}>Адрес: г. Душанбе, ул. Бухоро 2</p>
             <div className="footer-social">
               <a className="soc-btn" href={`tel:${phone.replace(/\s/g, '')}`} aria-label="Телефон">
                 <Phone size={16} color="#a97c32" />
               </a>
-              {profile?.telegram && (
-                <a className="soc-btn" href={tgLink} aria-label="Telegram" target="_blank" rel="noopener noreferrer">
-                  <Send size={16} color="#a97c32" />
-                </a>
-              )}
+              <a className="soc-btn" href={profile?.telegram ? tgLink : "https://t.me/barakatestate"} aria-label="Telegram" target="_blank" rel="noopener noreferrer">
+                <Send size={16} color="#a97c32" />
+              </a>
               <a className="soc-btn" href={profile?.instagram ? igLink : "https://www.instagram.com/barakat.estatee?igsh=b3E3YzBwejJ6bXJt"} aria-label="Instagram" target="_blank" rel="noopener noreferrer">
                 <InstagramIcon size={16} color="#a97c32" />
               </a>
               <a className="soc-btn" href="https://youtube.com/@barakat.estatee?si=Q7YruY5MlKFE-yML" aria-label="YouTube" target="_blank" rel="noopener noreferrer">
                 <YoutubeIcon size={16} color="#a97c32" />
               </a>
-              <a className="soc-btn" href="https://www.tiktok.com/@barakat_estate.tj?_r=1&_t=ZS-97Xebu1TxRq" aria-label="TikTok" target="_blank" rel="noopener noreferrer">
+              <a className="soc-btn" href="https://www.tiktok.com/@barakat.estatee" aria-label="TikTok" target="_blank" rel="noopener noreferrer">
                 <TiktokIcon size={16} color="#a97c32" />
               </a>
             </div>

@@ -171,6 +171,7 @@ function mapAdminListing(entry) {
     description: item.description || '',
     constructionStage: item.constructionStage || '',
     renovation: item.renovation || '',
+    documentType: item.documentType || '',
     landmark: item.landmark || '',
     phone: sellerPhone,
     mapX: item.mapX ? `${item.mapX}%` : '',
@@ -284,6 +285,7 @@ const lucideIcons = {
   construction: '<rect x="2" y="6" width="20" height="8" rx="1"/><path d="M17 14v7"/><path d="M7 14v7"/><path d="M17 3v3"/><path d="M7 3v3"/><path d="M10 14 2.3 6.3"/><path d="M14 6l7.7 7.7"/><path d="m8 6 8 8"/>',
   search: '<circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/>',
   'message-square': '<path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>',
+  clipboard: '<rect width="8" height="4" x="8" y="2" rx="1"/><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/><path d="m9 14 2 2 4-4"/>',
 };
 
 function lucideIcon(name, className = 'lucide-inline', size = 16) {
@@ -400,10 +402,11 @@ function propCard(p, onclick) {
           <span>${lucideIcon('ruler')} <strong>${p.area}</strong> м²</span>
           <span>${lucideIcon('building2')} <strong>${p.floor}</strong> эт</span>
         </div>
-        ${(p.renovation && p.renovation !== 'Любая') || (p.constructionStage && p.constructionStage !== 'Любая') ? `
+        ${(p.renovation && p.renovation !== 'Любая') || (p.constructionStage && p.constructionStage !== 'Любая') || (p.documentType && p.documentType !== 'Любой') ? `
         <div style="display: flex; gap: 18px; flex-wrap: wrap; width: 100%;">
           ${p.renovation && p.renovation !== 'Любая' ? `<span>${lucideIcon('sparkles')} ${p.renovation}</span>` : ''}
           ${p.constructionStage && p.constructionStage !== 'Любая' ? `<span>${lucideIcon('construction')} ${p.constructionStage}</span>` : ''}
+          ${p.documentType && p.documentType !== 'Любой' ? `<span>${lucideIcon('clipboard')} ${p.documentType}</span>` : ''}
         </div>` : ''}
       </div>
       <div class="prop-agent">
@@ -1074,6 +1077,7 @@ function getListingsFilters() {
     maxArea: maxArea,
     renovation: urlParams.get('renovation') || '',
     constructionStages: selectedCheckboxValues('Стадия строительства').length ? selectedCheckboxValues('Стадия строительства') : (urlParams.get('stage') ? [urlParams.get('stage')] : []),
+    documentTypes: selectedCheckboxValues('Документ'),
   };
 }
 
@@ -1178,6 +1182,7 @@ function propertyMatchesFilters(property, filters) {
   if (filters.maxArea && area > filters.maxArea) return false;
   if (filters.renovation && property.renovation !== filters.renovation) return false;
   if (filters.constructionStages.length && !filters.constructionStages.includes(property.constructionStage)) return false;
+  if (filters.documentTypes.length && !filters.documentTypes.includes(property.documentType)) return false;
 
   return true;
 }
@@ -1259,6 +1264,9 @@ function renderPropertyDetail() {
     }
     if (property.constructionStage && property.constructionStage !== 'Любая') {
       chipsHtml += `<div class="detail-chip">${lucideIcon('construction')} ${property.constructionStage}</div>`;
+    }
+    if (property.documentType && property.documentType !== 'Любой') {
+      chipsHtml += `<div class="detail-chip">${lucideIcon('clipboard')} ${property.documentType}</div>`;
     }
     detailChips.innerHTML = chipsHtml;
   }
