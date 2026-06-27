@@ -11,7 +11,7 @@ window.AuraSettings = {
 };
 
 async function loadGlobalSettings() {
-  const baseUrl = window.BARAKAT_API_URL || 'http://localhost:3001';
+  const baseUrl = window.BARAKAT_API_URL || 'https://barakatestateadmin.vercel.app';
   try {
     const res = await fetch(`${baseUrl}/api/profile`, { cache: 'no-store' });
     if (!res.ok) return;
@@ -73,7 +73,7 @@ function mediaUrl(media) {
   if (!media) return '';
   if (typeof media === 'string') {
     if (/^(https?:|data:|blob:)/.test(media)) return media;
-    const baseUrl = window.BARAKAT_API_URL || 'http://localhost:3001';
+    const baseUrl = window.BARAKAT_API_URL || 'https://barakatestateadmin.vercel.app';
     return `${baseUrl}${media}`;
   }
   const raw = Array.isArray(media) ? media[0] : media;
@@ -81,7 +81,7 @@ function mediaUrl(media) {
   const url = item?.url;
   if (!url) return '';
   if (/^(https?:|data:|blob:)/.test(url)) return url;
-  const baseUrl = window.BARAKAT_API_URL || 'http://localhost:3001';
+  const baseUrl = window.BARAKAT_API_URL || 'https://barakatestateadmin.vercel.app';
   return `${baseUrl}${url}`;
 }
 
@@ -1625,7 +1625,7 @@ async function loadReviews() {
   const container = document.getElementById('reviews-grid');
   if (!container) return;
   try {
-    const baseUrl = window.BARAKAT_API_URL || 'http://localhost:3001';
+    const baseUrl = window.BARAKAT_API_URL || 'https://barakatestateadmin.vercel.app';
     const res = await fetch(`${baseUrl}/api/reviews`);
     if (!res.ok) return;
     const { data } = await res.json();

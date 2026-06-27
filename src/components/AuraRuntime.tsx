@@ -23,7 +23,7 @@ export default function AuraRuntime() {
     const auraWindow = window as AuraWindow;
     const page = pageFromPath(pathname);
     const isDev = process.env.NODE_ENV === "development";
-    auraWindow.BARAKAT_API_URL = isDev ? "http://localhost:3001" : (process.env.NEXT_PUBLIC_ADMIN_API_URL || "http://localhost:3001");
+    auraWindow.BARAKAT_API_URL = isDev ? "http://localhost:3001" : (process.env.NEXT_PUBLIC_ADMIN_API_URL || "https://barakatestateadmin.vercel.app");
 
     const boot = async () => {
       await auraWindow.hydrateAuraPage?.(page);
