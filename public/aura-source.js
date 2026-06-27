@@ -182,8 +182,7 @@ function mapAdminListing(entry) {
 }
 
 async function loadAdminProperties() {
-  const baseUrl = window.BARAKAT_API_URL;
-  if (!baseUrl) return;
+  const baseUrl = window.BARAKAT_API_URL || 'https://barakatestateadmin.vercel.app';
 
   try {
     const params = [
