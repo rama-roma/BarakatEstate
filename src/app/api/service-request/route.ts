@@ -23,7 +23,7 @@ export async function POST(request: Request) {
   }
 
   // Save to Admin DB
-  const adminApi = process.env.NODE_ENV === 'development' ? 'http://localhost:3001' : (process.env.NEXT_PUBLIC_ADMIN_API_URL || "http://localhost:3001");
+  const adminApi = process.env.NODE_ENV === 'development' ? 'http://localhost:3001' : (process.env.NEXT_PUBLIC_ADMIN_API_URL || "https://barakatestateadmin.vercel.app");
   
   try {
     const response = await fetch(`${adminApi}/api/applications`, {

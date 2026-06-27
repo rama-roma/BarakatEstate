@@ -1533,10 +1533,12 @@ window.hydrateAuraPage = async function(page) {
     if (typeof populateSelects === 'function') populateSelects();
     window.__globalDataLoaded = true;
   }
+  if (typeof renderCatalogState === 'function') renderCatalogState();
 
   if (page === 'home' || page === '') {
     setupHomeServices();
     renderCards('featured-grid', 6);
+    if (typeof setupHomeCarousel === 'function') setupHomeCarousel();
     initYandexMaps();
     initRangeInputs();
     await loadReviews();

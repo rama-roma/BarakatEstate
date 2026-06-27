@@ -121,7 +121,7 @@ export default function SellerProfilePage() {
 
   useEffect(() => {
     let ignore = false;
-    const baseUrl = process.env.NEXT_PUBLIC_ADMIN_API_URL || "http://localhost:3001";
+    const baseUrl = process.env.NEXT_PUBLIC_ADMIN_API_URL || "https://barakatestateadmin.vercel.app";
 
     async function loadSeller() {
       if (!sellerId) {

@@ -53,7 +53,7 @@ const TiktokIcon = ({ size = 24, color = "currentColor" }) => (
 );
 
 export default async function SiteFooter() {
-  const baseUrl = process.env.NEXT_PUBLIC_ADMIN_API_URL || "http://localhost:3001";
+  const baseUrl = process.env.NEXT_PUBLIC_ADMIN_API_URL || "https://barakatestateadmin.vercel.app";
   let profile = null;
 
   try {

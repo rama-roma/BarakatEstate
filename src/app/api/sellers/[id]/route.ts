@@ -1,7 +1,7 @@
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
 
-const backendUrl = process.env.NEXT_PUBLIC_ADMIN_API_URL || "http://localhost:3001";
+const backendUrl = process.env.NEXT_PUBLIC_ADMIN_API_URL || "https://barakatestateadmin.vercel.app";
 
 type SellerContext = {
   params: Promise<{ id: string }>;

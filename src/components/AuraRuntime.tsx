@@ -22,12 +22,18 @@ export default function AuraRuntime() {
   useEffect(() => {
     const auraWindow = window as AuraWindow;
     const page = pageFromPath(pathname);
-    const isDev = process.env.NODE_ENV === "development";
-    auraWindow.BARAKAT_API_URL = isDev ? "http://localhost:3001" : (process.env.NEXT_PUBLIC_ADMIN_API_URL || "https://barakatestateadmin.vercel.app");
+    const baseUrl = process.env.NEXT_PUBLIC_ADMIN_API_URL || "https://barakatestateadmin.vercel.app";
+    auraWindow.BARAKAT_API_URL = baseUrl;
+    console.log("Aura Runtime using API URL:", baseUrl);
 
     const boot = async () => {
-      await auraWindow.hydrateAuraPage?.(page);
-      auraWindow.hideLoader?.();
+      try {
+        await auraWindow.hydrateAuraPage?.(page);
+      } catch (err) {
+        console.error("Hydration failed:", err);
+      } finally {
+        auraWindow.hideLoader?.();
+      }
     };
 
     if (auraWindow.__auraScriptLoaded) {
