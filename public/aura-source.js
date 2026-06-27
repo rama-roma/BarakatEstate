@@ -283,10 +283,12 @@ const lucideIcons = {
   check: '<path d="M20 6 9 17l-5-5"/>',
   sparkles: '<path d="M9.937 15.5A2 2 0 0 0 8.5 14.063l-6.135-1.582a.5.5 0 0 1 0-.962L8.5 9.936A2 2 0 0 0 9.937 8.5l1.582-6.135a.5.5 0 0 1 .963 0L14.063 8.5A2 2 0 0 0 15.5 9.937l6.135 1.581a.5.5 0 0 1 0 .964L15.5 14.063a2 2 0 0 0-1.437 1.437l-1.582 6.135a.5.5 0 0 1-.963 0z"/><path d="M20 3v4"/><path d="M22 5h-4"/><path d="M4 17v2"/><path d="M5 18H3"/>',
   construction: '<rect x="2" y="6" width="20" height="8" rx="1"/><path d="M17 14v7"/><path d="M7 14v7"/><path d="M17 3v3"/><path d="M7 3v3"/><path d="M10 14 2.3 6.3"/><path d="M14 6l7.7 7.7"/><path d="m8 6 8 8"/>',
+  search: '<circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/>',
+  'message-square': '<path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>',
 };
 
-function lucideIcon(name, className = 'lucide-inline') {
-  return `<svg class="${className}" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${lucideIcons[name] || ''}</svg>`;
+function lucideIcon(name, className = 'lucide-inline', size = 16) {
+  return `<svg class="${className}" width="${size}" height="${size}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${lucideIcons[name] || ''}</svg>`;
 }
 
 // ── FAVORITES (localStorage) ──
@@ -464,7 +466,11 @@ function renderCards(containerId, count) {
   const items = getAllProperties().slice(0, count || getAllProperties().length);
   container.innerHTML = items.length
     ? items.map(p => propCard(p)).join('')
-    : '<div class="seller-empty" style="grid-column:1/-1">Объявления появятся после публикации в админке</div>';
+    : `<div style="grid-column: 1/-1; padding: 60px 20px; text-align: center; background: white; border-radius: 24px; border: 1px dashed var(--border); display: flex; flex-direction: column; align-items: center; justify-content: center;">
+        <div style="width: 72px; height: 72px; background: var(--cream); border-radius: 50%; display: flex; align-items: center; justify-content: center; color: var(--gold); margin-bottom: 20px;">${lucideIcon('search', '', 32)}</div>
+        <h3 style="font-size: 20px; font-weight: 600; color: var(--ink); margin: 0 0 8px 0;">Объявлений пока нет</h3>
+        <p style="font-size: 15px; color: var(--muted); max-width: 400px; margin: 0; line-height: 1.5;">В данный момент база данных пуста. Объекты появятся здесь сразу после того, как администратор их опубликует.</p>
+      </div>`;
 }
 
 function renderMapResults() {
@@ -485,7 +491,13 @@ function renderMapResults() {
         </div>
       </div>
     </div>
-  `).join('') : '<div class="seller-empty">На карте пока нет опубликованных объектов</div>';
+  `).join('') : `<div style="padding: 60px 20px; text-align: center; display: flex; flex-direction: column; align-items: center; justify-content: center;">
+      <div style="width: 64px; height: 64px; background: var(--cream); border-radius: 50%; display: flex; align-items: center; justify-content: center; color: var(--gold); margin-bottom: 16px;">
+        ${lucideIcon('mapPin', '', 28)}
+      </div>
+      <h3 style="font-size: 18px; font-weight: 600; color: var(--ink); margin: 0 0 8px 0;">Ничего не найдено</h3>
+      <p style="font-size: 14px; color: var(--muted); line-height: 1.5; margin: 0;">На карте пока нет опубликованных объектов, соответствующих вашим критериям.</p>
+    </div>`;
 
   const count = document.getElementById('map-results-count');
   if (count) {
@@ -667,6 +679,32 @@ function setupHomeServices() {
 }
 
 async function hydrateAuraPage(page) {
+  // Show skeleton loader
+  const skeletonHtml = Array(6).fill(`
+    <div class="prop-card" style="border: 1px solid var(--border); box-shadow: none;">
+      <div class="prop-img" style="background: #e2e8f0; animation: pulse 1.5s infinite;"></div>
+      <div class="prop-body">
+        <div style="height: 24px; background: #e2e8f0; width: 40%; border-radius: 6px; margin-bottom: 12px; animation: pulse 1.5s infinite;"></div>
+        <div style="height: 16px; background: #e2e8f0; width: 80%; border-radius: 4px; margin-bottom: 16px; animation: pulse 1.5s infinite;"></div>
+        <div style="display: flex; gap: 8px; margin-bottom: 16px;">
+          <div style="height: 16px; background: #e2e8f0; width: 25%; border-radius: 4px; animation: pulse 1.5s infinite;"></div>
+          <div style="height: 16px; background: #e2e8f0; width: 25%; border-radius: 4px; animation: pulse 1.5s infinite;"></div>
+          <div style="height: 16px; background: #e2e8f0; width: 25%; border-radius: 4px; animation: pulse 1.5s infinite;"></div>
+        </div>
+        <div style="display: flex; gap: 12px; margin-top: auto; border-top: 1px solid var(--border); padding-top: 16px;">
+          <div style="width: 32px; height: 32px; background: #e2e8f0; border-radius: 50%; animation: pulse 1.5s infinite;"></div>
+          <div style="height: 16px; background: #e2e8f0; width: 40%; border-radius: 4px; margin-top: 8px; animation: pulse 1.5s infinite;"></div>
+        </div>
+      </div>
+    </div>
+  `).join('');
+  
+  const grids = ['featured-grid', 'listings-grid', 'favorites-grid', 'agent-grid'];
+  grids.forEach(id => {
+    const grid = document.getElementById(id);
+    if (grid) grid.innerHTML = skeletonHtml;
+  });
+
   await loadGlobalSettings();
   populateSelects();
   await loadAdminProperties();
@@ -915,6 +953,10 @@ function navigateWithFilters() {
   if (landmark) params.set('landmark', landmark);
   if (maxArea) params.set('maxArea', maxArea);
 
+  const roomLabel = page.querySelector('#home-room-label');
+  const rooms = roomLabel ? roomLabel.dataset.val : '';
+  if (rooms && rooms !== 'Любой') params.set('rooms', rooms);
+
   const activeTab = page.querySelector('.s-tab.active');
   if (activeTab) {
     if (activeTab.textContent.includes('Купить')) params.set('deal', 'Продажа');
@@ -936,6 +978,20 @@ function filterChip(el) {
   group?.querySelectorAll('.filter-chip').forEach(c => c.classList.remove('active'));
   el.classList.add('active');
   renderFilteredListings();
+}
+
+window.selectHomeRoom = function(el, val) {
+  const container = document.getElementById('home-room-chips');
+  if (container) {
+    container.querySelectorAll('.filter-chip').forEach(c => c.classList.remove('active'));
+  }
+  el.classList.add('active');
+  
+  const label = document.getElementById('home-room-label');
+  if (label) {
+    label.dataset.val = val;
+    label.textContent = val === 'Любой' ? 'Комнат' : val + ' комн.';
+  }
 }
 
 function setupListingFilters() {
@@ -1018,7 +1074,7 @@ function getListingsFilters() {
     minArea: minArea,
     maxArea: maxArea,
     renovation: urlParams.get('renovation') || '',
-    constructionStage: urlParams.get('stage') || '',
+    constructionStages: selectedCheckboxValues('Стадия строительства').length ? selectedCheckboxValues('Стадия строительства') : (urlParams.get('stage') ? [urlParams.get('stage')] : []),
   };
 }
 
@@ -1122,7 +1178,7 @@ function propertyMatchesFilters(property, filters) {
   if (filters.minArea && area < filters.minArea) return false;
   if (filters.maxArea && area > filters.maxArea) return false;
   if (filters.renovation && property.renovation !== filters.renovation) return false;
-  if (filters.constructionStage && property.constructionStage !== filters.constructionStage) return false;
+  if (filters.constructionStages.length && !filters.constructionStages.includes(property.constructionStage)) return false;
 
   return true;
 }
@@ -1143,10 +1199,19 @@ function renderFilteredListings() {
   const items = sortProperties(getAllProperties().filter((property) => propertyMatchesFilters(property, filters)), filters.sort);
   container.innerHTML = items.length
     ? items.map((property) => propCard(property)).join('')
-    : '<div class="seller-empty" style="grid-column:1/-1">По этим фильтрам объявлений нет</div>';
+    : `<div style="grid-column: 1/-1; padding: 80px 20px; text-align: center; background: white; border-radius: 24px; border: 1px dashed var(--border); display: flex; flex-direction: column; align-items: center; justify-content: center;">
+        <div style="width: 72px; height: 72px; background: var(--cream); border-radius: 50%; display: flex; align-items: center; justify-content: center; color: var(--gold); margin-bottom: 20px;">${lucideIcon('search')}</div>
+        <h3 style="font-size: 20px; font-weight: 600; color: var(--ink); margin: 0 0 8px 0;">Ничего не найдено</h3>
+        <p style="font-size: 15px; color: var(--muted); max-width: 400px; margin: 0; line-height: 1.5;">По выбранным фильтрам нет подходящих объявлений. Попробуйте изменить параметры поиска.</p>
+      </div>`;
 
   const count = document.querySelector('.listings-count');
   if (count) count.innerHTML = `Найдено: <strong>${items.length} объектов</strong>`;
+
+  const loadMoreBtn = document.querySelector('.listings-main .btn-secondary')?.parentElement;
+  if (loadMoreBtn) {
+    loadMoreBtn.style.display = items.length === 0 ? 'none' : 'block';
+  }
 }
 
 function renderPropertyDetail() {
@@ -1338,7 +1403,11 @@ function renderFavoritesPage() {
   if (!container) return;
   container.innerHTML = items.length
     ? items.map((property) => propCard(property)).join('')
-    : '<div class="seller-empty" style="grid-column:1/-1">Здесь пока ничего нет </div>';
+    : `<div style="grid-column: 1/-1; padding: 60px 20px; text-align: center; background: white; border-radius: 24px; border: 1px dashed var(--border); display: flex; flex-direction: column; align-items: center; justify-content: center;">
+        <div style="width: 72px; height: 72px; background: var(--cream); border-radius: 50%; display: flex; align-items: center; justify-content: center; color: var(--gold); margin-bottom: 20px;">${lucideIcon('heart', '', 32)}</div>
+        <h3 style="font-size: 20px; font-weight: 600; color: var(--ink); margin: 0 0 8px 0;">В избранном пусто</h3>
+        <p style="font-size: 15px; color: var(--muted); max-width: 400px; margin: 0; line-height: 1.5;">Добавляйте понравившиеся объявления в избранное, чтобы вернуться к ним позже.</p>
+      </div>`;
 }
 
 function toggleFav(btn) {
@@ -1456,10 +1525,277 @@ function initRangeInputs() {
   });
 }
 
-// First render
-setupHomeServices();
-renderCards('featured-grid', 6);
-initYandexMaps();
-initRangeInputs();
+window.hydrateAuraPage = async function(page) {
+  if (!window.__globalDataLoaded) {
+    await Promise.all([
+      typeof loadGlobalSettings === 'function' ? loadGlobalSettings() : Promise.resolve(),
+      typeof loadAdminProperties === 'function' ? loadAdminProperties() : Promise.resolve()
+    ]);
+    if (typeof populateSelects === 'function') populateSelects();
+    window.__globalDataLoaded = true;
+  }
 
+  if (page === 'home' || page === '') {
+    setupHomeServices();
+    renderCards('featured-grid', 6);
+    initYandexMaps();
+    initRangeInputs();
+    await loadReviews();
+  } else if (page === 'favorites') {
+    renderFavoritesPage();
+  } else if (page === 'team') {
+    await loadTeam();
+  } else if (page === 'listings') {
+    if (typeof setupListingFilters === 'function') setupListingFilters();
+    if (typeof renderFilteredListings === 'function') renderFilteredListings();
+  } else if (page === 'map') {
+    if (typeof setupMapFilters === 'function') setupMapFilters();
+    if (typeof renderMapResults === 'function') renderMapResults();
+    const fullMap = document.getElementById('yandex-full-map');
+    if (fullMap && !fullMap._ymap && typeof loadYandexMap === 'function') {
+      loadYandexMap().then(() => {
+        createYandexMap('yandex-full-map', [38.5598, 68.7870], 12);
+        renderMapResults();
+      });
+    }
+  } else if (page === 'property') {
+    if (typeof renderPropertyDetail === 'function') renderPropertyDetail();
+    if (typeof initCardSliders === 'function') initCardSliders();
+  }
+};
 
+async function submitReview(event) {
+  event.preventDefault();
+  const form = event.target;
+  const btn = form.querySelector('button[type="submit"]');
+  btn.disabled = true;
+  btn.textContent = 'Загрузка...';
+
+  const formData = new FormData(form);
+  const payload = {
+    name: formData.get('name'),
+    text: formData.get('text'),
+    sellerId: null, // Global review for the whole site
+  };
+
+  try {
+    const baseUrl = window.BARAKAT_API_URL || 'http://localhost:3001';
+    const response = await fetch(`${baseUrl}/api/reviews`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload),
+    });
+
+    if (!response.ok) throw new Error('Ошибка отправки');
+    showNotif('Ваш отзыв успешно отправлен на модерацию!');
+    form.reset();
+    document.getElementById('modal-review').style.display = 'none';
+  } catch (error) {
+    showNotif('Не удалось отправить отзыв. Попробуйте позже.');
+  } finally {
+    btn.disabled = false;
+    btn.textContent = 'Отправить отзыв';
+  }
+}
+
+window.openReviewModal = function() {
+  let modal = document.getElementById('modal-review');
+  if (!modal) {
+    modal = document.createElement('div');
+    modal.id = 'modal-review';
+    modal.style.cssText = "display:none;position:fixed;inset:0;background:rgba(0,0,0,0.6);z-index:9999;align-items:center;justify-content:center;padding:20px;";
+    modal.innerHTML = `
+      <div style="background:white;padding:32px;border-radius:24px;width:100%;max-width:400px;position:relative;">
+        <button onclick="document.getElementById('modal-review').style.display='none'" style="position:absolute;top:16px;right:16px;border:none;background:transparent;font-size:24px;cursor:pointer;color:#64748b;">&times;</button>
+        <h3 style="font-size:22px;font-weight:700;margin-bottom:8px;color:#0f172a;text-align:center;">Оставить отзыв</h3>
+        <p style="font-size:14px;color:#64748b;margin-bottom:24px;text-align:center;">Поделитесь вашим впечатлением о работе с нами.</p>
+        <form id="form-review" style="display:flex;flex-direction:column;gap:16px;" onsubmit="submitReview(event)">
+          <input type="text" name="name" required placeholder="Ваше имя" style="padding:14px 16px;border-radius:10px;border:1px solid #cbd5e1;font-size:15px;color:#0f172a;outline:none;font-family:inherit;"/>
+          <textarea name="text" required placeholder="Ваш отзыв" rows="4" style="padding:14px 16px;border-radius:10px;border:1px solid #cbd5e1;font-size:15px;resize:none;color:#0f172a;outline:none;font-family:inherit;"></textarea>
+          <button type="submit" style="padding:14px;background:var(--gold);color:var(--ink);font-weight:600;border:none;border-radius:10px;cursor:pointer;font-size:15px;margin-top:8px;font-family:inherit;">Отправить отзыв</button>
+        </form>
+      </div>
+    `;
+    document.body.appendChild(modal);
+  }
+  modal.style.display = 'flex';
+}
+
+async function loadReviews() {
+  const container = document.getElementById('reviews-grid');
+  if (!container) return;
+  try {
+    const baseUrl = window.BARAKAT_API_URL || 'http://localhost:3001';
+    const res = await fetch(`${baseUrl}/api/reviews`);
+    if (!res.ok) return;
+    const { data } = await res.json();
+    const approvedReviews = data.filter(r => r.status === 'approved');
+    if (approvedReviews.length === 0) {
+      container.innerHTML = `<div style="grid-column: 1/-1; padding: 60px 20px; text-align: center; background: white; border-radius: 24px; border: 1px dashed var(--border); display: flex; flex-direction: column; align-items: center; justify-content: center;">
+        <div style="width: 72px; height: 72px; background: var(--cream); border-radius: 50%; display: flex; align-items: center; justify-content: center; color: var(--gold); margin-bottom: 20px;">${lucideIcon('message-square', '', 32)}</div>
+        <h3 style="font-size: 20px; font-weight: 600; color: var(--ink); margin: 0 0 8px 0;">Отзывов пока нет</h3>
+        <p style="font-size: 15px; color: var(--muted); max-width: 400px; margin: 0; line-height: 1.5;">Станьте первым, кто оставит отзыв о нашей работе!</p>
+      </div>`;
+      return;
+    }
+
+    container.innerHTML = approvedReviews.map(r => `
+      <div style="flex:0 0 300px; background:linear-gradient(145deg, #ffffff 0%, #f9fbfd 100%); padding:24px; border-radius:20px; box-shadow:0 8px 24px rgba(0,0,0,0.06); border:1px solid rgba(212, 175, 55, 0.2); display:flex; flex-direction:column; gap:16px; position:relative; scroll-snap-align:start;">
+        <div style="position:absolute; top:16px; right:16px; color:rgba(212, 175, 55, 0.12);">
+          <svg width="32" height="32" viewBox="0 0 24 24" fill="currentColor"><path d="M14.017 21v-7.391c0-5.704 3.731-9.57 8.983-10.609l.995 2.151c-2.432.917-3.995 3.638-3.995 5.849h4v10h-9.983zm-14.017 0v-7.391c0-5.704 3.748-9.57 9-10.609l.996 2.151c-2.433.917-3.996 3.638-3.996 5.849h3.983v10h-9.983z"/></svg>
+        </div>
+        <div style="flex:1;">
+          <p style="font-size:15px; line-height:1.6; color:var(--ink); font-style:italic; position:relative; z-index:2; margin:0; display:-webkit-box; -webkit-line-clamp:4; -webkit-box-orient:vertical; overflow:hidden;">"${r.text}"</p>
+          ${r.text.length > 160 ? `<button onclick="const p = this.previousElementSibling; if(p.style.display==='block'){ p.style.display='-webkit-box'; this.innerHTML='Читать далее'; } else { p.style.display='block'; this.innerHTML='Скрыть <span style=\\'font-size:16px; margin-left:4px;\\'>&uarr;</span>'; }" style="background:none; border:none; color:var(--gold); font-size:14px; font-weight:600; padding:0; margin-top:8px; cursor:pointer; display:flex; align-items:center;">Читать далее</button>` : ''}
+        </div>
+        <div style="display:flex; align-items:center; gap:12px; margin-top: 4px;">
+          <div style="width:40px; height:40px; border-radius:50%; background:linear-gradient(135deg, var(--gold) 0%, #B89025 100%); color:white; display:flex; align-items:center; justify-content:center; font-weight:700; font-size:18px; box-shadow:0 4px 12px rgba(212, 175, 55, 0.3);">
+            ${r.name.charAt(0).toUpperCase()}
+          </div>
+          <div style="font-weight:700; font-size:15px; color:#0f172a;">${r.name}</div>
+        </div>
+      </div>
+    `).join('');
+  } catch (err) {
+    console.error('Failed to load reviews', err);
+  }
+}
+
+// loadReviews() is now called via hydrateAuraPage
+
+// Form logic for static pages
+document.addEventListener('submit', async (e) => {
+  const form = e.target;
+  if (form.classList && form.classList.contains('service-request-form')) {
+    e.preventDefault();
+    const btn = form.querySelector('button[type="submit"]');
+    if (btn) {
+      btn.disabled = true;
+      btn.textContent = 'Отправка...';
+    }
+    
+    const formData = new FormData(form);
+    const service = form.getAttribute('data-service') || 'Общая заявка';
+    const data = {
+      name: formData.get('name'),
+      phone: formData.get('phone'),
+      message: formData.get('message') || '',
+      service
+    };
+    
+    try {
+      const res = await fetch('/api/service-request', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(data)
+      });
+      if (!res.ok) throw new Error('Ошибка сервера');
+      
+      const successDiv = form.parentElement.querySelector('.service-request-success');
+      if (successDiv) {
+        form.style.display = 'none';
+        successDiv.style.display = 'block';
+      } else {
+        alert('Заявка отправлена!');
+        form.reset();
+      }
+    } catch (err) {
+      console.error(err);
+      alert('Ошибка при отправке. Попробуйте позже.');
+    } finally {
+      if (btn) {
+        btn.disabled = false;
+        btn.textContent = 'Отправить заявку';
+      }
+    }
+  }
+});
+
+document.addEventListener('input', (e) => {
+  if (e.target.matches('.phone-input') || (e.target.type === 'tel' && !e.target.hasAttribute('value'))) {
+    let val = e.target.value;
+    if (!val || val === "+" || val === "+9" || val === "+99" || val === "+992" || val === "+992 ") {
+      e.target.value = "";
+      return;
+    }
+    const digits = val.replace(/\D/g, "");
+    let phoneDigits = digits;
+    if (digits.startsWith("992")) {
+      phoneDigits = digits.slice(3);
+    }
+    if (phoneDigits.length === 0) {
+      e.target.value = "+992 ";
+      return;
+    }
+    let formatted = "+992 ";
+    if (phoneDigits.length > 0) formatted += phoneDigits.substring(0, 3);
+    if (phoneDigits.length > 3) formatted += " " + phoneDigits.substring(3, 5);
+    if (phoneDigits.length > 5) formatted += " " + phoneDigits.substring(5, 9);
+    e.target.value = formatted;
+  }
+});
+
+document.addEventListener('focusin', (e) => {
+  if (e.target.matches('.phone-input') || (e.target.type === 'tel' && !e.target.hasAttribute('value'))) {
+    if (!e.target.value) {
+      e.target.value = "+992 ";
+    }
+  }
+});
+
+async function loadTeam() {
+  const container = document.getElementById('team-grid');
+  if (!container) return;
+  try {
+    const baseUrl = 'https://barakatestateadmin.vercel.app';
+    const res = await fetch(`${baseUrl}/api/users`);
+    if (!res.ok) throw new Error('Network response was not ok');
+    const payload = await res.json();
+    const data = payload.data || payload;
+    
+    const activeEmployees = (Array.isArray(data) ? data : []).filter(e => e.role === 'seller');
+    
+    if (activeEmployees.length === 0) {
+      container.innerHTML = `<div style="grid-column: 1/-1; padding: 60px 20px; text-align: center; background: white; border-radius: 24px; border: 1px dashed var(--border); display: flex; flex-direction: column; align-items: center; justify-content: center;">
+        <div style="width: 72px; height: 72px; background: var(--cream); border-radius: 50%; display: flex; align-items: center; justify-content: center; color: var(--gold); margin-bottom: 20px;">
+          <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+        </div>
+        <h3 style="font-size: 20px; font-weight: 600; color: var(--ink); margin: 0 0 8px 0;">Сотрудники не найдены</h3>
+        <p style="font-size: 15px; color: var(--muted); max-width: 400px; margin: 0; line-height: 1.5;">В данный момент список сотрудников пуст.</p>
+      </div>`;
+      return;
+    }
+
+    container.innerHTML = activeEmployees.map(emp => `
+      <div onclick="navigate('agent', '${emp.id}')" style="cursor: pointer; background: white; border-radius: 16px; padding: 32px 24px; box-shadow: 0 4px 15px rgba(0,0,0,0.03); border: 1px solid var(--border); display: flex; flex-direction: column; align-items: center; text-align: center; transition: all 0.2s;" onmouseover="this.style.boxShadow='0 10px 25px rgba(0,0,0,0.08)'; this.style.transform='translateY(-4px)'" onmouseout="this.style.boxShadow='0 4px 15px rgba(0,0,0,0.03)'; this.style.transform='none'">
+        
+        <div style="width: 100px; height: 100px; border-radius: 50%; overflow: hidden; margin-bottom: 16px; background: var(--cream); border: 1px solid var(--border);">
+          <img src="${emp.avatar || 'https://images.unsplash.com/photo-1560250097-0b93528c311a?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80'}" alt="${emp.name || emp.fullName}" style="width: 100%; height: 100%; object-fit: cover;" onerror="this.src='https://images.unsplash.com/photo-1560250097-0b93528c311a?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80'"/>
+        </div>
+        
+        <h3 style="font-size: 18px; font-weight: 700; color: var(--ink); margin: 0 0 4px 0;">${emp.name || emp.fullName}</h3>
+        <div style="font-size: 13px; font-weight: 600; color: var(--gold); text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 20px;">${emp.position || emp.specializations || 'Агент по недвижимости'}</div>
+        
+        <div style="display: flex; gap: 16px; justify-content: center; align-items: center;">
+          <a href="tel:${emp.phone || ''}" onclick="event.stopPropagation()" style="width: 44px; height: 44px; border-radius: 50%; background: rgba(212, 175, 55, 0.1); color: var(--gold); display: flex; align-items: center; justify-content: center; transition: all 0.2s;" onmouseover="this.style.background='var(--gold)'; this.style.color='white'; this.style.transform='scale(1.1)'" onmouseout="this.style.background='rgba(212, 175, 55, 0.1)'; this.style.color='var(--gold)'; this.style.transform='none'" title="Телефон">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
+          </a>
+          <a href="${emp.whatsapp ? 'https://wa.me/' + emp.whatsapp.replace(/\D/g, '') : '#'}" onclick="event.stopPropagation()" target="_blank" style="width: 44px; height: 44px; border-radius: 50%; background: rgba(37, 211, 102, 0.1); color: #25D366; display: flex; align-items: center; justify-content: center; transition: all 0.2s;" onmouseover="this.style.background='#25D366'; this.style.color='white'; this.style.transform='scale(1.1)'" onmouseout="this.style.background='rgba(37, 211, 102, 0.1)'; this.style.color='#25D366'; this.style.transform='none'" title="WhatsApp">
+            <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" fill="currentColor" viewBox="0 0 16 16"><path d="M13.601 2.326A7.854 7.854 0 0 0 7.994 0C3.627 0 .068 3.558.064 7.926c0 1.399.366 2.76 1.057 3.965L0 16l4.204-1.102a7.933 7.933 0 0 0 3.79.965h.004c4.368 0 7.926-3.558 7.93-7.93A7.898 7.898 0 0 0 13.6 2.326zM7.994 14.521a6.573 6.573 0 0 1-3.356-.92l-.24-.144-2.494.654.666-2.433-.156-.251a6.56 6.56 0 0 1-1.007-3.505c0-3.626 2.957-6.584 6.591-6.584a6.56 6.56 0 0 1 4.66 1.931 6.557 6.557 0 0 1 1.928 4.66c-.004 3.639-2.961 6.592-6.592 6.592zm3.615-4.934c-.197-.099-1.17-.578-1.353-.646-.182-.065-.315-.099-.445.099-.133.197-.513.646-.627.775-.114.133-.232.148-.43.05-.197-.1-.836-.308-1.592-.985-.59-.525-.985-1.175-1.103-1.372-.114-.198-.011-.304.088-.403.087-.088.197-.232.296-.346.1-.114.133-.198.198-.33.065-.134.034-.248-.015-.347-.05-.099-.445-1.076-.612-1.47-.16-.389-.323-.335-.445-.34-.114-.007-.247-.007-.38-.007a.729.729 0 0 0-.529.247c-.182.198-.691.677-.691 1.654 0 .977.71 1.916.81 2.049.098.133 1.394 2.132 3.383 2.992.47.205.84.326 1.129.418.475.152.904.129 1.246.08.38-.058 1.171-.48 1.338-.943.164-.464.164-.86.114-.943-.049-.084-.182-.133-.38-.232z"/></svg>
+          </a>
+          <a href="${emp.telegram ? (emp.telegram.startsWith('http') ? emp.telegram : 'https://t.me/' + emp.telegram.replace('@', '')) : '#'}" onclick="event.stopPropagation()" target="_blank" style="width: 44px; height: 44px; border-radius: 50%; background: rgba(0, 136, 204, 0.1); color: #0088cc; display: flex; align-items: center; justify-content: center; transition: all 0.2s;" onmouseover="this.style.background='#0088cc'; this.style.color='white'; this.style.transform='scale(1.1)'" onmouseout="this.style.background='rgba(0, 136, 204, 0.1)'; this.style.color='#0088cc'; this.style.transform='none'" title="Telegram">
+            <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" fill="currentColor" viewBox="0 0 16 16"><path d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0zM8.287 5.906c-.778.324-2.334.994-4.666 2.01-.378.15-.577.298-.595.442-.03.243.275.339.69.47l.175.055c.408.133.958.288 1.243.294.26.006.549-.1.868-.32 2.179-1.471 3.304-2.214 3.374-2.23.05-.012.12-.026.166.016.047.041.042.12.037.141-.03.129-1.227 1.241-1.846 1.817-.193.18-.33.307-.358.336a8.154 8.154 0 0 1-.188.186c-.38.366-.664.64.015 1.088.327.216.589.393.85.571.284.194.568.387.936.629.093.06.183.125.27.187.331.236.63.448.997.414.214-.02.435-.22.547-.82.265-1.417.786-4.486.906-5.751a1.426 1.426 0 0 0-.013-.315.337.337 0 0 0-.114-.217.526.526 0 0 0-.31-.093c-.3.005-.763.166-2.984 1.09z"/></svg>
+          </a>
+        </div>
+      </div>
+    `).join('');
+  } catch (err) {
+    console.error('Failed to load team', err);
+    container.innerHTML = `<div style="grid-column: 1/-1; padding: 60px 20px; text-align: center;">
+      <h3 style="font-size: 20px; font-weight: 600; color: var(--ink); margin: 0 0 8px 0;">Ошибка загрузки</h3>
+      <p style="color: var(--muted);">Не удалось загрузить список сотрудников. Пожалуйста, обновите страницу.</p>
+    </div>`;
+  }
+}
+
+// loadTeam() is now called via hydrateAuraPage

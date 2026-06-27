@@ -68,7 +68,7 @@ export const serviceDetails = {
     slug: "putty",
     href: "/putty",
     theme: "putty",
-    title: "Шпаклевка бесплатно",
+    title: "Шпаклевка в подарок",
     shortTitle: "Шпаклевка",
     eyebrow: "Специальная акция",
     description:

@@ -146,6 +146,7 @@ export const auraPages = {
             <option>Квартира</option>
             <option>Вторичка</option>
             <option>Новостройки</option>
+            <option>Котлован</option>
             <option>Дома</option>
             <option>Дом</option>
             <option>Земельные участки</option>
@@ -159,14 +160,17 @@ export const auraPages = {
         <!-- Dropdown for Rooms -->
         <div style="flex: 1; position: relative;" class="filter-dropdown-wrap">
           <div class="s-select" onclick="const menu = this.nextElementSibling; const isVisible = menu.style.display === 'block'; document.querySelectorAll('.filter-dropdown-menu').forEach(el => el.style.display = 'none'); if(!isVisible) menu.style.display = 'block'; event.stopPropagation();" style="width: 100%; height: 48px; display: flex; align-items: center; cursor: pointer; padding: 0 16px; justify-content: space-between;">
-            <span style="color: var(--ink)">Комнат</span>
-            <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2"><path d="m4 6 4 4 4-4"/></svg>
+            <span style="color: var(--ink)" id="home-room-label" data-val="Любой">Комнат</span>
           </div>
           <div class="filter-dropdown-menu" style="display: none; position: absolute; top: 100%; left: 0; margin-top: 8px; background: white; border: 1px solid var(--border); border-radius: 16px; padding: 16px; width: 280px; z-index: 100; box-shadow: 0 8px 24px rgba(0,0,0,0.08);" onclick="event.stopPropagation()">
             <div style="margin-bottom: 12px; font-weight: 600; font-size: 14px; color: var(--ink);">Количество комнат</div>
-            <div style="display: flex; gap: 8px;">
-              <input class="s-input" placeholder="От" style="width: 50%; padding-left: 16px; padding-right: 12px;"/>
-              <input class="s-input" placeholder="До" style="width: 50%; padding-left: 16px; padding-right: 12px;"/>
+            <div style="display: flex; gap: 8px; flex-wrap: wrap;" id="home-room-chips">
+              <div class="filter-chip active" onclick="selectHomeRoom(this, 'Любой')">Любой</div>
+              <div class="filter-chip" onclick="selectHomeRoom(this, '1')">1</div>
+              <div class="filter-chip" onclick="selectHomeRoom(this, '2')">2</div>
+              <div class="filter-chip" onclick="selectHomeRoom(this, '3')">3</div>
+              <div class="filter-chip" onclick="selectHomeRoom(this, '4')">4</div>
+              <div class="filter-chip" onclick="selectHomeRoom(this, '5+')">5+</div>
             </div>
           </div>
         </div>
@@ -175,7 +179,6 @@ export const auraPages = {
         <div style="flex: 1; position: relative;" class="filter-dropdown-wrap">
           <div class="s-select" onclick="const menu = this.nextElementSibling; const isVisible = menu.style.display === 'block'; document.querySelectorAll('.filter-dropdown-menu').forEach(el => el.style.display = 'none'); if(!isVisible) menu.style.display = 'block'; event.stopPropagation();" style="width: 100%; height: 48px; display: flex; align-items: center; cursor: pointer; padding: 0 16px; justify-content: space-between;">
             <span style="color: var(--ink)">Цена</span>
-            <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2"><path d="m4 6 4 4 4-4"/></svg>
           </div>
           <div class="filter-dropdown-menu" style="display: none; position: absolute; top: 100%; left: 0; margin-top: 8px; background: white; border: 1px solid var(--border); border-radius: 16px; padding: 16px; width: 280px; z-index: 100; box-shadow: 0 8px 24px rgba(0,0,0,0.08);" onclick="event.stopPropagation()">
             <div style="margin-bottom: 12px; font-weight: 600; font-size: 14px; color: var(--ink);">Диапазон цены</div>
@@ -268,15 +271,7 @@ export const auraPages = {
         <h2 class="section-title">Популярные <strong>объявления</strong></h2>
         <p class="section-sub">Лучшие варианты квартир в Душанбе по соотношению цены и качества</p>
       </div>
-      <div class="filters-row">
-        <button class="filter-chip active" onclick="filterChip(this)">Все</button>
-        <button class="filter-chip" onclick="filterChip(this)">Продажа</button>
-        <button class="filter-chip" onclick="filterChip(this)">Аренда</button>
-        <button class="filter-chip" onclick="filterChip(this)">Новостройки</button>
-        <button class="filter-chip" onclick="filterChip(this)">Центр</button>
-        <button class="filter-chip" onclick="filterChip(this)">И. Сомони</button>
-        <button class="filter-chip" onclick="filterChip(this)">Сино</button>
-      </div>
+
       <div class="grid-3" id="featured-grid">
         <!-- Cards injected by JS -->
       </div>
@@ -351,7 +346,7 @@ export const auraPages = {
           <div style="position: absolute; inset: 0; background-image: url('https://images.unsplash.com/photo-1589939705384-5185137a7f0f?auto=format&fit=crop&w=800&q=80'); background-size: cover; background-position: center; opacity: 0.15; z-index: 0; transition: opacity 0.3s;" onmouseover="this.style.opacity='0.3'" onmouseout="this.style.opacity='0.15'"></div>
           <div style="position: relative; z-index: 1; flex: 1; display: flex; flex-direction: column;">
             <div class="service-icon">[[ICON_SPARKLES]]</div>
-            <h3>Шпаклевка бесплатно</h3>
+            <h3>Шпаклевка в подарок</h3>
             <p style="flex: 1;">При покупке жилья — шпаклевка стен в подарок!</p>
             <div class="service-price" style="margin-bottom: 16px;">Бесплатно</div>
             <div class="test-gold-btn" onclick="event.stopPropagation(); window.location.href='/putty'">Подробнее</div>
@@ -366,6 +361,25 @@ export const auraPages = {
             <div class="service-price" style="margin-bottom: 16px;">По объему работ</div>
             <div class="test-gold-btn" onclick="event.stopPropagation(); window.location.href='/cleaning'">Подробнее</div>
           </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- REVIEWS -->
+  <section class="reviews-section reveal" style="padding: 80px 0; background: var(--bg-color);">
+    <div class="container">
+      <div class="section-header" style="display:flex;justify-content:space-between;align-items:flex-end;margin-bottom:40px;flex-wrap:wrap;gap:16px;">
+        <div>
+          <div class="section-eyebrow">Мнения клиентов</div>
+          <h2 class="section-title">Отзывы о <strong>Barakat Estate</strong></h2>
+        </div>
+        <button class="btn-primary" onclick="openReviewModal()" style="padding:12px 24px;border-radius:100px;border:none;background:var(--gold);color:var(--ink);font-weight:600;cursor:pointer;">Оставить отзыв</button>
+      </div>
+      <div class="reviews-grid" id="reviews-grid" style="display:flex;overflow-x:auto;scroll-snap-type:x mandatory;gap:24px;padding-bottom:20px;padding-top:10px;align-items:flex-start;">
+        <div style="width: 100%; padding: 40px 20px; text-align: center;">
+          <div class="spinner" style="margin: 0 auto 20px auto; width: 40px; height: 40px; border: 3px solid rgba(212,175,55,0.2); border-top-color: var(--gold); border-radius: 50%; animation: spin 1s linear infinite;"></div>
+          <p style="color: var(--muted);">Загрузка отзывов...</p>
         </div>
       </div>
     </div>
@@ -450,7 +464,7 @@ export const auraPages = {
           <svg width="18" height="18" fill="none" stroke="#8A7F6A" stroke-width="2"><circle cx="8" cy="8" r="6"/><path d="m14 14-3-3"/></svg>
           <input class="s-input" placeholder="Поиск по адресу..."/>
         </div>
-        <select class="s-select"><option>Все типы</option><option>Квартира</option><option>Вторичка</option><option>Новостройки</option><option>Дома</option><option>Дом</option><option>Земельные участки</option><option>Коммерческая</option><option>Дача</option><option>Парковка</option><option>Комната</option></select>
+        <select class="s-select"><option>Все типы</option><option>Квартира</option><option>Вторичка</option><option>Новостройки</option><option>Котлован</option><option>Дома</option><option>Дом</option><option>Земельные участки</option><option>Коммерческая</option><option>Дача</option><option>Парковка</option><option>Комната</option></select>
         <select class="s-select"><option>Комнат</option><option>1</option><option>2</option><option>3</option><option>4+</option></select>
         <button class="s-btn">Найти</button>
       </div>
@@ -472,6 +486,7 @@ export const auraPages = {
           <label class="filter-check"><input type="checkbox" /><label>Квартира</label></label>
           <label class="filter-check"><input type="checkbox" /><label>Вторичка</label></label>
           <label class="filter-check"><input type="checkbox" /><label>Новостройки</label></label>
+          <label class="filter-check"><input type="checkbox" /><label>Котлован</label></label>
           <label class="filter-check"><input type="checkbox" /><label>Дома</label></label>
           <label class="filter-check"><input type="checkbox" /><label>Дом</label></label>
           <label class="filter-check"><input type="checkbox" /><label>Земельные участки</label></label>
@@ -507,6 +522,13 @@ export const auraPages = {
             <span class="filter-range-sep">—</span>
             <input type="number" placeholder="До" min="0" step="1" />
           </div>
+        </div>
+
+        <div class="filter-group">
+          <h4>Стадия строительства</h4>
+          <label class="filter-check"><input type="checkbox" /><label>Построен</label></label>
+          <label class="filter-check"><input type="checkbox" /><label>Строится</label></label>
+          <label class="filter-check"><input type="checkbox" /><label>Котлован</label></label>
         </div>
 
         <div class="filter-group">
@@ -591,7 +613,7 @@ export const auraPages = {
             <div class="service-card-media"><img src="https://images.unsplash.com/photo-1589939705384-5185137a7f0f?auto=format&fit=crop&w=800&q=80" alt="Шпаклевка совершенно бесплатно!" loading="lazy" /></div>
             <div class="service-card-body">
               <div class="service-icon">[[ICON_SPARKLES]]</div>
-              <h3>Шпаклевка бесплатно</h3>
+              <h3>Шпаклевка в подарок</h3>
               <p>При покупке жилья через ЧДММ «Баракат Хизматрасон» — шпаклевка в подарок!</p>
               <div class="service-price">Бесплатно</div>
               <a class="service-request-btn" href="/putty" onclick="event.stopPropagation()">Подробнее</a>
@@ -657,7 +679,7 @@ export const auraPages = {
     <section class="services-hero-panel" style="background-image: linear-gradient(135deg, rgba(30, 45, 74, 0.85) 0%, rgba(212, 175, 55, 0.6) 100%), url('https://images.unsplash.com/photo-1589939705384-5185137a7f0f?auto=format&fit=crop&w=1600&q=80'); background-size: cover; background-position: center center; color: white; position: relative; min-height: 40vh; display: flex; align-items: center; justify-content: center; padding-top: 80px;">
       <div class="container" style="position: relative; z-index: 2; display: flex; flex-direction: column; align-items: center; text-align: center;">
         <div class="section-eyebrow" style="color: rgba(255,255,255,0.85); border-color: rgba(255,255,255,0.3); background: rgba(255,255,255,0.1); backdrop-filter: blur(4px);">Специальная акция</div>
-        <h1 class="section-title" style="color: white; text-shadow: 0 4px 16px rgba(0,0,0,0.4);">Шпаклевка совершенно <strong>бесплатно!</strong></h1>
+        <h1 class="section-title" style="color: white; text-shadow: 0 4px 16px rgba(0,0,0,0.4);">Шпаклевка в <strong>подарок!</strong></h1>
       </div>
     </section>
 
@@ -709,7 +731,7 @@ export const auraPages = {
               <p style="font-size: 16px; color: var(--muted);">Мы ответим вам как можно быстрее.</p>
             </div>
             
-            <form class="service-request-form" data-service="Шпаклевка бесплатно" style="background: linear-gradient(135deg, #ffffff 0%, #f1f5f9 100%); border: 1px solid var(--gold); border-radius: 20px; padding: 48px; color: var(--ink); display: grid; grid-template-columns: 1fr 1fr; gap: 24px; box-shadow: 0 20px 50px rgba(0,0,0,0.3);">
+            <form class="service-request-form" data-service="Шпаклевка в подарок" style="background: linear-gradient(135deg, #ffffff 0%, #f1f5f9 100%); border: 1px solid var(--gold); border-radius: 20px; padding: 48px; color: var(--ink); display: grid; grid-template-columns: 1fr 1fr; gap: 24px; box-shadow: 0 20px 50px rgba(0,0,0,0.3);">
               <label style="display: block;">
                 <span style="display: block; margin-bottom: 8px; font-weight: 500; font-size: 14px; color: var(--ink);">Ваше имя</span>
                 <input type="text" name="name" class="beautiful-input" required placeholder="Введите имя" style="width: 100%; padding: 16px 20px; border-radius: 12px; color: var(--ink); font-size: 15px;" />
@@ -1089,12 +1111,15 @@ export const auraPages = {
           </div>
           <div style="display: flex; align-items: center; gap: 12px; background: rgba(255,255,255,0.1); padding: 16px 24px; border-radius: 12px; width: 100%;">
             <div style="color: var(--gold);">[[ICON_PHONE]]</div>
-            <a href="tel:+992055077777" style="font-size: 16px; color: white; text-decoration: none; font-weight: 500;">+992 055 07 77 77</a>
+            <a href="tel:+992201077771" style="font-size: 16px; color: white; text-decoration: none; font-weight: 500;">+992 201 07 7771</a>
           </div>
         </div>
         <button class="btn-primary" onclick="navigate('listings')" style="font-size: 16px; padding: 16px 36px; border: none; cursor: pointer; border-radius: 100px; background: var(--gold); color: var(--ink); font-weight: 600;">Смотреть объявления</button>
       </div>
     </section>
+    </section>
+
+
   </div>
 </div>`,
   error404: `<div class="page active" id="page-404">
@@ -1128,6 +1153,29 @@ export const auraPages = {
       </button>
     </div>
   </div>
+</div>`,
+  team: `<div class="page active" id="page-team">
+  <div class="header-padding"></div>
+  <section class="listings-hero" style="background-image: linear-gradient(135deg, rgba(30, 45, 74, 0.8) 0%, rgba(212, 175, 55, 0.5) 100%), url('https://images.unsplash.com/photo-1560518883-ce09059eeffa?ixlib=rb-4.0.3&auto=format&fit=crop&w=1920&q=80'); background-size: cover; background-position: center; color: white; padding-top: 100px; padding-bottom: 70px; text-align: center; position: relative;">
+    <div class="container" style="display: flex; flex-direction: column; align-items: center; justify-content: center; position: relative; z-index: 2;">
+      <div style="width: 64px; height: 64px; background: rgba(255,255,255,0.15); backdrop-filter: blur(12px); border-radius: 50%; display: flex; align-items: center; justify-content: center; margin-bottom: 20px; box-shadow: 0 8px 32px rgba(0,0,0,0.2); border: 1px solid rgba(255,255,255,0.3); color: white;">
+        <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+      </div>
+      <h1 style="color: white; font-size: 48px; font-weight: 800; letter-spacing: -1.5px; margin-bottom: 12px; text-shadow: 0 4px 16px rgba(0,0,0,0.4); line-height: 1.1;">Наша Команда</h1>
+      <p style="color: rgba(255,255,255,0.95); font-size: 18px; font-weight: 500; max-width: 600px; margin: 0 auto; text-shadow: 0 2px 8px rgba(0,0,0,0.3);">Познакомьтесь с профессионалами Barakat Estate, которые помогут вам найти идеальную недвижимость.</p>
+    </div>
+  </section>
+
+  <section style="padding: 80px 0; background: var(--cream);">
+    <div class="container">
+      <div id="team-grid" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 32px;">
+        <div style="grid-column: 1/-1; padding: 60px 20px; text-align: center;">
+          <div class="spinner" style="margin: 0 auto 20px auto; width: 40px; height: 40px; border: 3px solid rgba(212,175,55,0.2); border-top-color: var(--gold); border-radius: 50%; animation: spin 1s linear infinite;"></div>
+          <p style="color: var(--muted);">Загрузка сотрудников...</p>
+        </div>
+      </div>
+    </div>
+  </section>
 </div>`
 } as const;
 
