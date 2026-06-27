@@ -1767,7 +1767,7 @@ async function loadTeam() {
     }
 
     container.innerHTML = activeEmployees.map(emp => `
-      <div onclick="navigate('agent', '${emp.id}')" style="cursor: pointer; background: white; border-radius: 16px; padding: 32px 24px; box-shadow: 0 4px 15px rgba(0,0,0,0.03); border: 1px solid var(--border); display: flex; flex-direction: column; align-items: center; text-align: center; transition: all 0.2s;" onmouseover="this.style.boxShadow='0 10px 25px rgba(0,0,0,0.08)'; this.style.transform='translateY(-4px)'" onmouseout="this.style.boxShadow='0 4px 15px rgba(0,0,0,0.03)'; this.style.transform='none'">
+      <div onclick="navigate('profile', '${emp.id}')" style="cursor: pointer; background: white; border-radius: 16px; padding: 32px 24px; box-shadow: 0 4px 15px rgba(0,0,0,0.03); border: 1px solid var(--border); display: flex; flex-direction: column; align-items: center; text-align: center; transition: all 0.2s;" onmouseover="this.style.boxShadow='0 10px 25px rgba(0,0,0,0.08)'; this.style.transform='translateY(-4px)'" onmouseout="this.style.boxShadow='0 4px 15px rgba(0,0,0,0.03)'; this.style.transform='none'">
         
         <div style="width: 100px; height: 100px; border-radius: 50%; overflow: hidden; margin-bottom: 16px; background: var(--cream); border: 1px solid var(--border);">
           <img src="${emp.avatar || 'https://images.unsplash.com/photo-1560250097-0b93528c311a?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80'}" alt="${emp.name || emp.fullName}" style="width: 100%; height: 100%; object-fit: cover;" onerror="this.src='https://images.unsplash.com/photo-1560250097-0b93528c311a?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80'"/>
